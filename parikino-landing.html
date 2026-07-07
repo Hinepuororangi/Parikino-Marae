@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Parikino Marae</title>
+<meta name="description" content="Parikino Marae — nestled on the banks of the Whanganui River. Nau mai haere mai.">
+<meta name="theme-color" content="#653366">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --plum:#653366;
+  --plum-dark:#472448;
+  --periwinkle:#666698;
+  --paper:#FAF8F6;
+  --paper2:#F0EAEF;
+  --ink:#2B2030;
+  --stone:#7C7284;
+  --line:#E3D9E2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  font-size:15px;
+}
+.wrap{max-width:640px;margin:0 auto;padding:0 24px}
+img{max-width:100%;display:block}
+a{color:inherit}
+::selection{background:var(--periwinkle);color:var(--paper)}
+
+/* ---- masthead ---- */
+header{padding:18px 0}
+header .wrap{display:flex;justify-content:space-between;align-items:center}
+.brandmark{display:flex;align-items:center;gap:10px}
+.brandmark svg{width:34px;height:34px;flex-shrink:0}
+.brandmark span{font-family:'Playfair Display',serif;font-weight:700;font-size:19px;color:var(--plum-dark);line-height:1.1}
+.menu-icon{width:26px;height:18px;display:flex;flex-direction:column;justify-content:space-between}
+.menu-icon i{display:block;height:2px;background:var(--plum-dark);border-radius:2px}
+
+/* ---- photo grid ---- */
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 6px}
+.grid4 .g1{grid-column:1/2;grid-row:1/3}
+.grid4 a{display:block;overflow:hidden;background:var(--paper2)}
+.grid4 img{width:100%;height:100%;object-fit:cover}
+.grid4 .g1 img{aspect-ratio:1/1.55}
+.grid4 .g2,.grid4 .g3{aspect-ratio:1.6/1}
+.grid4 .g2 img,.grid4 .g3 img{aspect-ratio:1.6/1}
+
+/* ---- big heading block ---- */
+.introblock{text-align:center;padding:44px 24px 8px;max-width:640px;margin:0 auto}
+.introblock h1{
+  font-family:'Playfair Display',serif;font-weight:800;
+  font-size:clamp(30px,9vw,46px);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--plum);line-height:1.15;
+}
+.introblock p{margin-top:16px;color:var(--stone);font-size:14.5px;max-width:40ch;margin-left:auto;margin-right:auto}
+
+/* ---- quicklinks row ---- */
+.quicklinks{display:flex;justify-content:center;gap:22px;padding:34px 24px 8px;flex-wrap:wrap}
+.qlink{text-align:center;text-decoration:none;width:64px}
+.qlink .circ{width:56px;height:56px;border-radius:50%;background:var(--periwinkle);display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.qlink .circ svg{width:24px;height:24px;stroke:var(--paper)}
+.qlink span{font-size:10px;font-weight:600;letter-spacing:.03em;color:var(--plum-dark)}
+
+/* ---- feature photo ---- */
+.feature{padding:44px 0 0}
+.feature .photo{overflow:hidden;background:var(--paper2)}
+.feature img{width:100%;height:280px;object-fit:cover}
+.feature figcaption{font-size:11.5px;color:var(--stone);margin-top:10px;text-align:center}
+
+/* ---- engage panel ---- */
+.engage{text-align:center;padding:48px 24px 8px;max-width:520px;margin:0 auto}
+.engage h2{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(22px,6vw,28px);color:var(--plum-dark);margin-bottom:10px}
+.engage p{color:var(--stone);font-size:14px;margin-bottom:20px}
+.btn-outline{display:inline-block;border:1.5px solid var(--plum);color:var(--plum);text-decoration:none;font-weight:600;font-size:13px;letter-spacing:.03em;padding:13px 30px}
+.btn-outline:active{background:var(--plum);color:var(--paper)}
+.btn-solid{display:inline-block;background:var(--plum);color:var(--paper);text-decoration:none;font-weight:600;font-size:13px;letter-spacing:.03em;padding:14px 30px}
+
+/* ---- sections ---- */
+section{padding:56px 0 0}
+.eyebrow{text-align:center;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--periwinkle);margin-bottom:8px}
+h2.center{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(24px,7vw,30px);text-align:center;color:var(--plum-dark);margin-bottom:30px}
+
+/* ---- whare cards : simple stacked ---- */
+.whare-card{background:var(--paper);border:1px solid var(--line);margin-bottom:18px;overflow:hidden}
+.whare-card img{width:100%;height:190px;object-fit:cover}
+.whare-card .wc-body{padding:18px 20px 20px}
+.whare-card h3{font-family:'Playfair Display',serif;font-weight:700;font-size:21px;color:var(--plum-dark)}
+.whare-card .role{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--plum);margin:4px 0 8px}
+.whare-card p{font-size:13.5px;color:var(--stone)}
+
+/* ---- info panel : hireage + tangihanga ---- */
+.infopanel{background:var(--paper2);padding:32px 24px;margin:0 -24px}
+.infopanel h3{font-family:'Playfair Display',serif;font-weight:700;font-size:19px;color:var(--plum-dark);margin-bottom:8px}
+.infopanel p{font-size:14px;color:#453A48}
+.infopanel a{color:var(--plum);font-weight:600;text-decoration:none;display:inline-block;margin-top:10px;font-size:13px;border-bottom:1.5px solid var(--periwinkle)}
+.infopanel + .infopanel{margin-top:2px}
+
+/* ---- kawa : simple list ---- */
+.kawa ul{list-style:none}
+.kawa li{font-size:14px;padding:14px 0;border-top:1px solid var(--line);color:#453A48}
+.kawa li:last-child{border-bottom:1px solid var(--line)}
+
+/* ---- closing band ---- */
+.closing{background:var(--plum);color:var(--paper);text-align:center;padding:52px 24px;margin-top:60px}
+.closing svg{width:34px;height:34px;stroke:var(--paper);margin:0 auto 16px}
+.closing h2{font-family:'Playfair Display',serif;font-style:italic;font-weight:600;font-size:clamp(22px,6vw,28px);margin-bottom:10px}
+.closing p{font-size:14px;color:#E3D6E2;max-width:38ch;margin:0 auto 22px}
+.closing .btn-solid{background:var(--paper);color:var(--plum)}
+
+/* ---- footer ---- */
+footer{padding:30px 0 46px;text-align:center;background:var(--plum-dark);color:#D6C7D5;font-size:11.5px}
+footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight:600;font-size:16px;color:var(--paper);margin-bottom:6px}
+
+@media(min-width:600px){
+  .whare-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+  .whare-card{margin-bottom:0}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brandmark">
+      <svg viewBox="0 0 40 40" fill="none"><path d="M4 20 L20 6 L36 20" stroke="#653366" stroke-width="2.4" stroke-linejoin="round"/><rect x="10" y="18" width="20" height="16" stroke="#653366" stroke-width="2.2"/></svg>
+      <span>Parikino<br>Marae</span>
+    </div>
+    <a href="bookings.html" class="menu-icon" aria-label="Book"><i></i><i></i><i></i></a>
+  </div>
+</header>
+
+<div class="grid4">
+  <a class="g1" href="#whare"><img src="https://iqxvqndfroegvhcipqkn.supabase.co/storage/v1/object/public/Documents/kowharewhiti.jpg" alt="Kowharewhiti at dusk" onerror="this.parentElement.style.display='none'"></a>
+  <a class="g2" href="#whare"><img src="images/te-aroha.jpg" alt="Te Aroha" onerror="this.parentElement.style.display='none'"></a>
+  <a class="g3" href="#whare"><img src="images/kowharewhiti.jpg" alt="Kowharewhiti" onerror="this.parentElement.style.display='none'"></a>
+</div>
+
+<div class="introblock">
+  <h1>Parikino<br>Marae</h1>
+  <p>Nau mai haere mai and welcome to Parikino Marae, on the banks of the Whanganui River.</p>
+</div>
+
+<div class="quicklinks">
+  <a class="qlink" href="#whare">
+    <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M6 10v10h12V10"/></svg></div>
+    <span>Ngā Whare</span>
+  </a>
+  <a class="qlink" href="#hireage">
+    <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1.1 3 2.5-1.3 2-3 2.5-3 1.1-3 2.5 1.3 2.5 3 2.5 3-1.1 3-2.5"/></svg></div>
+    <span>Hireage</span>
+  </a>
+  <a class="qlink" href="#kawa">
+    <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 3 6 6 6 10a6 6 0 0 1-12 0c0-4 2-7 6-10z"/></svg></div>
+    <span>Kawa</span>
+  </a>
+  <a class="qlink" href="#tangi">
+    <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-9.5-8.8C1 9 2.3 5.5 5.6 5c2-.3 3.6.8 4.4 2.3C10.8 5.8 12.4 4.7 14.4 5c3.3.5 4.6 4 3.1 7.2C15 16.6 12 21 12 21z"/></svg></div>
+    <span>Tangihanga</span>
+  </a>
+</div>
+
+<div class="feature">
+  <div class="wrap">
+    <div class="photo"><img src="https://iqxvqndfroegvhcipqkn.supabase.co/storage/v1/object/public/Documents/manaakitia.jpg" alt="Manaakitia" onerror="this.closest('.feature').style.display='none'"></div>
+    <figcaption>Manaakitia — our wharekai and kaumātua room</figcaption>
+  </div>
+</div>
+
+<div class="engage">
+  <h2>Ready to visit?</h2>
+  <p>Send your booking request in a couple of minutes — a trustee will be in touch to confirm.</p>
+  <a class="btn-outline" href="bookings.html">Book the marae</a>
+</div>
+
+<section id="whare">
+  <div class="wrap">
+    <div class="eyebrow">Ngā Whare</div>
+    <h2 class="center">The marae complex</h2>
+    <div class="whare-grid">
+      <div class="whare-card">
+        <img src="images/te-aroha.jpg" alt="Te Aroha" onerror="this.parentElement.style.display='none'">
+        <div class="wc-body">
+          <h3>Te Aroha</h3>
+          <div class="role">Wharepuni</div>
+        </div>
+      </div>
+      <div class="whare-card">
+        <img src="images/kowharewhiti.jpg" alt="Kowharewhiti" onerror="this.parentElement.style.display='none'">
+        <div class="wc-body">
+          <h3>Kowharewhiti</h3>
+          <div class="role">Wharepuni</div>
+        </div>
+      </div>
+      <div class="whare-card">
+        <img src="https://iqxvqndfroegvhcipqkn.supabase.co/storage/v1/object/public/Documents/manaakitia.jpg" alt="Manaakitia" onerror="this.parentElement.style.display='none'">
+        <div class="wc-body">
+          <h3>Manaakitia</h3>
+          <div class="role">Wharekai · Te Rangimarie</div>
+          <p>Dining hall with a full kitchen and cookhouse. Te Rangimarie is our kaumātua room.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="hireage">
+  <div class="wrap">
+    <div class="eyebrow">Hireage</div>
+    <h2 class="center">Utu &amp; koha</h2>
+    <div class="infopanel">
+      <h3>General hireage</h3>
+      <p>Rates depend on the kaupapa — get in touch and a trustee will confirm cost when you book.</p>
+    </div>
+    <div class="infopanel" id="tangi">
+      <h3>Tangihanga</h3>
+      <p>There is no set charge for tangihanga — the marae operates on a koha basis, and we will walk alongside your whānau. On arrival, the marae provides a koha toward your whānau's first kai. Grants are available through Ngā Tāngata Tiaki and Ātihau.</p>
+      <a href="https://iqxvqndfroegvhcipqkn.supabase.co/storage/v1/object/public/Documents/tangihanga-booklet.pdf">Tangihanga guidelines booklet →</a>
+    </div>
+  </div>
+</section>
+
+<section class="kawa" id="kawa">
+  <div class="wrap">
+    <div class="eyebrow">Kawa &amp; Tikanga</div>
+    <h2 class="center">Staying at the marae</h2>
+    <ul>
+      <li>Zero tolerance: illegal drugs, alcohol and fighting are strictly prohibited on the marae.</li>
+      <li>No smoking or vaping inside any buildings.</li>
+      <li>Please keep all areas of the marae tidy during your stay.</li>
+      <li>No driving on the marae — please use the designated parking areas.</li>
+    </ul>
+    <p style="margin-top:20px;font-size:13.5px;color:var(--stone)">If you need support with a pōwhiri or tangihanga, let us know in your booking and we will guide you and your whānau. Take some time for the awa — Parikino is well known for its fruit and fishing spots.</p>
+  </div>
+</section>
+
+<div class="closing">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6c0 5.4-8.8 11.4-8.8 11.4S3.2 14 3.2 8.6a5.6 5.6 0 0 1 8.8-4.6 5.6 5.6 0 0 1 8.8 4.6z"/></svg>
+  <h2>Nau mai, haere mai</h2>
+  <p>Ngāti Tuera · Ngāti Hinearo · Ngāti Tumango welcome you to Parikino.</p>
+  <a class="btn-solid" href="bookings.html">Start a booking request</a>
+</div>
+
+<footer>
+  <div class="brand">Parikino Marae</div>
+  <div>Parikino Marae Reservation Trust</div>
+  <div>911 Whanganui River Road, RD 6, Whanganui 4576</div>
+  <div style="margin-top:14px"><a href="https://parikino-os-v2.vercel.app/" style="color:#D6C7D5;text-decoration:underline;font-size:11px;letter-spacing:.03em">Trustee login →</a></div>
+</footer>
+
+</body>
+</html>
