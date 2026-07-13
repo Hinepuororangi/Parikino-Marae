@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Book the Marae — Parikino Marae</title>
 <meta name="theme-color" content="#653366">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(()=>{}));
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -64,7 +72,7 @@ textarea{resize:vertical;min-height:80px}
 
 /* tangi contact block */
 .tangi-block{background:var(--paper2);padding:30px 24px;margin-top:8px}
-.tangi-block h2{font-family:'Playfair Display',serif;font-style:italic;font-weight:600;font-size:22px;color:var(--plum-dark);margin-bottom:10px}
+.tangi-block h2{font-family:'Playfair Display',serif;font-style:italic;font-weight:600;font-size:18px;line-height:1.5;color:var(--plum-dark);margin-bottom:12px}
 .tangi-block p{font-size:14px;color:#453A48;margin-bottom:8px}
 .tangi-block .contact{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
 .tangi-block .contact-line{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;color:var(--plum-dark);margin-top:8px}
@@ -123,7 +131,7 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
 
     <!-- Tangihanga: no form, direct contact only -->
     <div class="tangi-block" id="tangiBlock" style="display:none">
-      <h2>We're so sorry for your loss</h2>
+      <h2>He aroha ki te whānau e whakahokia mai ai ngā uri o Ngāti Tuera, o Hinearo, me Tumango ki tō tātou ūkaipō, ki te Marae o Parikino, ki te tangi, ki te poroporoaki.</h2>
       <p>For tangihanga, please don't fill out a form — ring or message our booking officer directly, any time, and they'll help you straight away.</p>
       <div class="contact">
         <div class="contact-line">
@@ -135,6 +143,7 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
           <a href="mailto:medz-rauz@hotmail.co.nz" style="color:inherit">medz-rauz@hotmail.co.nz</a>
         </div>
       </div>
+      <a href="parikino-marae-booklet.pdf" style="display:inline-block;margin-top:16px;color:var(--plum);font-weight:600;text-decoration:none;font-size:13px;border-bottom:1.5px solid var(--periwinkle)">Read the tangihanga guidelines →</a>
     </div>
 
     <!-- Everything else: the actual booking request form -->
