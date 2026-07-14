@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kai Planner — Parikino Marae</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+<style>
+  :root{
+    --plum:#653366;
+    --plum-dark:#4a2549;
+    --periwinkle:#666698;
+    --cream:#faf7f5;
+    --ink:#2a1f2b;
+    --line:#e7dfe6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;}
+  h1,h2,h3{font-family:'Playfair Display',serif;margin:0;}
+  .wrap{max-width:720px;margin:0 auto;padding:32px 20px 80px;}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--periwinkle);font-weight:600;margin-bottom:6px;}
+  h1{font-size:28px;color:var(--plum-dark);margin-bottom:4px;}
+  .sub{color:#6b5a6b;font-size:14px;margin-bottom:28px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;}
+  label{display:block;font-size:13px;font-weight:600;color:var(--plum-dark);margin-bottom:6px;}
+  select,input[type=number]{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;font-size:16px;font-family:inherit;background:#fff;}
+  .row{display:flex;gap:12px;}
+  .row > div{flex:1;}
+  .chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+  .chip{padding:8px 14px;border-radius:999px;border:1px solid var(--line);font-size:13px;cursor:pointer;background:#fff;color:var(--ink);}
+  .chip.active{background:var(--plum);border-color:var(--plum);color:#fff;}
+  .result-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+  .result-head h2{font-size:20px;color:var(--plum-dark);}
+  .cost{font-size:22px;font-weight:700;color:var(--plum);}
+  .cost small{font-size:12px;font-weight:500;color:#8a7a8a;display:block;}
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#8a7a8a;padding:8px 4px;border-bottom:1px solid var(--line);}
+  td{padding:10px 4px;border-bottom:1px solid #f1ebf0;}
+  .buy-tag{font-size:11px;background:#f3edf3;color:var(--plum-dark);padding:3px 8px;border-radius:6px;display:inline-block;margin-top:2px;}
+  .empty{color:#a08fa0;font-size:13px;text-align:center;padding:24px;}
+  .footnote{font-size:12px;color:#a08fa0;margin-top:18px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+/* ---- Data layer -------------------------------------------------
+   Structure mirrors pk_kai_recipes / pk_kai_ingredients / pk_bulk_options
+   so this can migrate straight to Supabase later (raw fetch, no supabase-js).
+   For now it's seeded locally so the tool works standalone. Edit these
+   arrays directly to add/adjust dishes or update NZ supermarket prices. */
+
+const RECIPES = [
+  { id: "hangi", name: "Hāngī", category: "Main", perHead: [
+      { item: "Pork (bone-in, e.g. pork bones/belly)", qty: 0.25, unit: "kg" },
+      { item: "Chicken pieces", qty: 0.2, unit: "kg" },
+      { item: "Potato", qty: 0.3, unit: "kg" },
+      { item: "Kūmara", qty: 0.2, unit: "kg" },
+      { item: "Pumpkin", qty: 0.15, unit: "kg" },
+      { item: "Cabbage", qty: 0.1, unit: "kg" },
+      { item: "Stuffing", qty: 0.08, unit: "kg" },
+  ]},
+  { id: "boilup", name: "Boil-up", category: "Main", perHead: [
+      { item: "Pork bones", qty: 0.3, unit: "kg" },
+      { item: "Pūhā or watercress", qty: 0.15, unit: "kg" },
+      { item: "Potato", qty: 0.25, unit: "kg" },
+      { item: "Kūmara", qty: 0.15, unit: "kg" },
+      { item: "Doughboy flour", qty: 0.08, unit: "kg" },
+  ]},
+  { id: "cornedbeef", name: "Corned Beef & Cabbage", category: "Main", perHead: [
+      { item: "Corned beef (silverside)", qty: 0.25, unit: "kg" },
+      { item: "Cabbage", qty: 0.15, unit: "kg" },
+      { item: "Potato", qty: 0.3, unit: "kg" },
+      { item: "Carrot", qty: 0.1, unit: "kg" },
+  ]},
+  { id: "mince", name: "Mince & Bread", category: "Main", perHead: [
+      { item: "Beef mince", qty: 0.15, unit: "kg" },
+      { item: "Sliced bread", qty: 0.25, unit: "loaf" },
+      { item: "Onion", qty: 0.05, unit: "kg" },
+  ]},
+  { id: "rewena", name: "Rewena Bread", category: "Bread", perHead: [
+      { item: "Flour (high grade)", qty: 0.06, unit: "kg" },
+      { item: "Rewena bug/starter", qty: 0.01, unit: "kg" },
+      { item: "Potato (for bug)", qty: 0.02, unit: "kg" },
+  ]},
+  { id: "pikelets", name: "Pikelets", category: "Sweet", perHead: [
+      { item: "Flour (standard)", qty: 0.04, unit: "kg" },
+      { item: "Eggs", qty: 0.2, unit: "each" },
+      { item: "Milk", qty: 0.06, unit: "L" },
+      { item: "Sugar", qty: 0.02, unit: "kg" },
+  ]},
+  { id: "morningtea", name: "Morning Tea / Sandwiches", category: "Light", perHead: [
+      { item: "Sliced bread", qty: 0.15, unit: "loaf" },
+      { item: "Sandwich fillings (ham/cheese/egg mix)", qty: 0.06, unit: "kg" },
+      { item: "Butter/margarine", qty: 0.015, unit: "kg" },
+      { item: "Tea/coffee", qty: 0.01, unit: "kg" },
+      { item: "Milk (for tea)", qty: 0.08, unit: "L" },
+  ]},
+  { id: "fruitcups", name: "Fruit Cups", category: "Light", perHead: [
+      { item: "Mixed fruit (seasonal)", qty: 0.15, unit: "kg" },
+      { item: "Clear cups", qty: 1, unit: "each" },
+  ]},
+];
+
+/* Bulk-buy reference prices — NZ ballpark, edit to match your local
+   Costco / PAK'nSAVE / Bin Inn runs. unitPrice = price per kg/L/each/loaf. */
+const BULK = {
+  "Pork (bone-in, e.g. pork bones/belly)": { store: "Costco", pack: "5kg tray", packPrice: 45, unitPrice: 9, unit: "kg" },
+  "Pork bones": { store: "PAK'nSAVE", pack: "per kg", packPrice: 6, unitPrice: 6, unit: "kg" },
+  "Chicken pieces": { store: "Costco", pack: "10kg box", packPrice: 55, unitPrice: 5.5, unit: "kg" },
+  "Potato": { store: "PAK'nSAVE", pack: "10kg bag", packPrice: 12, unitPrice: 1.2, unit: "kg" },
+  "Kūmara": { store: "PAK'nSAVE", pack: "per kg", packPrice: 4, unitPrice: 4, unit: "kg" },
+  "Pumpkin": { store: "PAK'nSAVE", pack: "per kg", packPrice: 2.5, unitPrice: 2.5, unit: "kg" },
+  "Cabbage": { store: "PAK'nSAVE", pack: "whole ~1.5kg", packPrice: 4, unitPrice: 2.7, unit: "kg" },
+  "Stuffing": { store: "PAK'nSAVE", pack: "200g box", packPrice: 2.5, unitPrice: 12.5, unit: "kg" },
+  "Pūhā or watercress": { store: "Local/marae garden", pack: "bag", packPrice: 5, unitPrice: 5, unit: "kg" },
+  "Doughboy flour": { store: "Bin Inn", pack: "25kg bag", packPrice: 30, unitPrice: 1.2, unit: "kg" },
+  "Corned beef (silverside)": { store: "Costco", pack: "5kg", packPrice: 65, unitPrice: 13, unit: "kg" },
+  "Carrot": { store: "PAK'nSAVE", pack: "5kg bag", packPrice: 8, unitPrice: 1.6, unit: "kg" },
+  "Beef mince": { store: "Costco", pack: "5kg", packPrice: 55, unitPrice: 11, unit: "kg" },
+  "Sliced bread": { store: "PAK'nSAVE", pack: "loaf", packPrice: 2.8, unitPrice: 2.8, unit: "loaf" },
+  "Onion": { store: "PAK'nSAVE", pack: "10kg bag", packPrice: 10, unitPrice: 1, unit: "kg" },
+  "Flour (high grade)": { store: "Bin Inn", pack: "25kg bag", packPrice: 32, unitPrice: 1.28, unit: "kg" },
+  "Rewena bug/starter": { store: "Homemade / marae supply", pack: "n/a", packPrice: 0, unitPrice: 0, unit: "kg" },
+  "Potato (for bug)": { store: "PAK'nSAVE", pack: "10kg bag", packPrice: 12, unitPrice: 1.2, unit: "kg" },
+  "Flour (standard)": { store: "Bin Inn", pack: "25kg bag", packPrice: 30, unitPrice: 1.2, unit: "kg" },
+  "Eggs": { store: "Costco", pack: "tray of 30", packPrice: 14, unitPrice: 0.47, unit: "each" },
+  "Milk": { store: "PAK'nSAVE", pack: "2L bottle", packPrice: 4, unitPrice: 2, unit: "L" },
+  "Sugar": { store: "Bin Inn", pack: "25kg bag", packPrice: 35, unitPrice: 1.4, unit: "kg" },
+  "Sandwich fillings (ham/cheese/egg mix)": { store: "Costco", pack: "avg mixed", packPrice: 10, unitPrice: 12, unit: "kg" },
+  "Butter/margarine": { store: "PAK'nSAVE", pack: "500g block", packPrice: 5, unitPrice: 10, unit: "kg" },
+  "Tea/coffee": { store: "Bin Inn", pack: "per kg", packPrice: 20, unitPrice: 20, unit: "kg" },
+  "Milk (for tea)": { store: "PAK'nSAVE", pack: "2L bottle", packPrice: 4, unitPrice: 2, unit: "L" },
+  "Mixed fruit (seasonal)": { store: "PAK'nSAVE", pack: "per kg", packPrice: 4, unitPrice: 4, unit: "kg" },
+  "Clear cups": { store: "Bin Inn", pack: "pack of 100", packPrice: 8, unitPrice: 0.08, unit: "each" },
+};
+
+function KaiPlanner() {
+  const [guests, setGuests] = useState(50);
+  const [selected, setSelected] = useState(["hangi", "morningtea"]);
+
+  const toggle = (id) => {
+    setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+  };
+
+  const results = useMemo(() => {
+    const rows = [];
+    let totalCost = 0;
+    selected.forEach(id => {
+      const r = RECIPES.find(x => x.id === id);
+      if (!r) return;
+      r.perHead.forEach(ing => {
+        const totalQty = ing.qty * guests;
+        const bulk = BULK[ing.item];
+        let packsNeeded = null, lineCost = null;
+        if (bulk) {
+          const packUnitQty = bulk.packPrice / bulk.unitPrice; // qty per pack in native unit
+          packsNeeded = Math.ceil(totalQty / packUnitQty) || 0;
+          lineCost = packsNeeded * bulk.packPrice;
+          totalCost += lineCost;
+        }
+        rows.push({
+          dish: r.name,
+          item: ing.item,
+          totalQty: totalQty,
+          unit: ing.unit,
+          bulk,
+          packsNeeded,
+          lineCost,
+        });
+      });
+    });
+    return { rows, totalCost };
+  }, [selected, guests]);
+
+  return (
+    <div className="wrap">
+      <div className="eyebrow">Parikino Marae</div>
+      <h1>Kai Planner</h1>
+      <div className="sub">Work out exactly how much kai — and how much it'll cost — for your next hui, tangi or wānanga.</div>
+
+      <div className="card">
+        <label htmlFor="guests">How many people?</label>
+        <input
+          id="guests"
+          type="number"
+          min="1"
+          value={guests}
+          onChange={e => setGuests(Math.max(1, Number(e.target.value) || 0))}
+        />
+
+        <label style={{marginTop:16}}>What are you serving?</label>
+        <div className="chip-group">
+          {RECIPES.map(r => (
+            <div
+              key={r.id}
+              className={"chip" + (selected.includes(r.id) ? " active" : "")}
+              onClick={() => toggle(r.id)}
+            >
+              {r.name}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="result-head">
+          <h2>Shopping list</h2>
+          <div className="cost">
+            ${results.totalCost.toFixed(2)}
+            <small>estimated total · ${(results.totalCost / guests || 0).toFixed(2)} per head</small>
+          </div>
+        </div>
+
+        {results.rows.length === 0 ? (
+          <div className="empty">Pick at least one dish above to see quantities.</div>
+        ) : (
+          <table>
+            <thead>
+              <tr><th>Item</th><th>Need</th><th>Buy</th></tr>
+            </thead>
+            <tbody>
+              {results.rows.map((row, i) => (
+                <tr key={i}>
+                  <td>
+                    {row.item}
+                    <div style={{fontSize:11, color:"#a08fa0"}}>{row.dish}</div>
+                  </td>
+                  <td>{row.totalQty.toFixed(2)} {row.unit}</td>
+                  <td>
+                    {row.bulk ? (
+                      <>
+                        {row.packsNeeded}× {row.bulk.pack}
+                        <div className="buy-tag">{row.bulk.store} · ${row.lineCost.toFixed(2)}</div>
+                      </>
+                    ) : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div className="footnote">
+          Quantities are guidelines based on average marae serving sizes — adjust for known big eaters, kaumātua portions, or if kai's going home with people. Prices are ballpark NZ bulk-store rates; update the BULK table in this file to match your local Costco/PAK'nSAVE/Bin Inn runs.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<KaiPlanner />);
+</script>
+</body>
+</html>
