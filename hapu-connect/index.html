@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Hapū Connect — Parikino Marae</title>
-<meta name="description" content="Register your details and share your whakaaro with Parikino Marae.">
+<meta name="description" content="Share your whakaaro with Parikino Marae.">
 <meta name="theme-color" content="#653366">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,6 @@
   --ink:#2B2030;
   --stone:#7C7284;
   --line:#E3D9E2;
-  --good:#2E7D32;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
@@ -54,10 +53,6 @@ textarea{min-height:80px;resize:vertical}
 }
 .btn:hover{background:var(--plum-dark)}
 .btn:disabled{background:var(--stone);cursor:not-allowed}
-.btn-outline{
-  background:transparent;border:1.5px solid var(--plum);color:var(--plum);
-}
-.btn-outline:hover{background:var(--paper2)}
 .choice-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
 .choice-btn{
   display:block;width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:10px;
@@ -74,7 +69,7 @@ textarea{min-height:80px;resize:vertical}
 }
 .thanks h2{font-family:'Playfair Display',serif;font-size:22px;color:var(--plum-dark);margin-bottom:8px}
 .thanks p{color:var(--stone);font-size:14px}
-.link-btn{background:none;border:none;color:var(--plum);font-weight:600;font-size:13px;cursor:pointer;text-decoration:underline;padding:4px 0}
+.link-out{color:var(--plum);font-weight:600;text-decoration:none;border-bottom:1.5px solid var(--periwinkle)}
 footer{padding:16px 24px 28px;text-align:center;color:var(--stone);font-size:11px}
 .loading{text-align:center;padding:60px 0;color:var(--stone);font-size:14px}
 </style>
@@ -115,7 +110,11 @@ function Header({ eyebrow, title, sub }) {
   );
 }
 
-function EmailGate({ onFound, onNotFound }) {
+function Footer() {
+  return <footer>Nā Parikino Marae Reservation Trust</footer>;
+}
+
+function EmailGate({ onFound, onNotRegistered }) {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -132,7 +131,7 @@ function EmailGate({ onFound, onNotFound }) {
       if (Array.isArray(data) && data.length > 0) {
         onFound({ id: data[0].id, name: data[0].name, email: email.trim().toLowerCase() });
       } else {
-        onNotFound(email.trim().toLowerCase());
+        onNotRegistered();
       }
     } catch (e) {
       setErr("Something went wrong — please try again.");
@@ -148,61 +147,28 @@ function EmailGate({ onFound, onNotFound }) {
         {err && <div className="error">{err}</div>}
         <button className="btn" onClick={check} disabled={busy}>{busy ? "Checking…" : "Continue"}</button>
       </div>
-      <p className="sub center">First time here? Enter your email and we'll take you to a quick registration.</p>
     </div>
   );
 }
 
-function RegisterForm({ email, onRegistered }) {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [whakapapa, setWhakapapa] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
-
-  async function submit() {
-    if (!name.trim()) { setErr("Please enter your name."); return; }
-    setBusy(true); setErr("");
-    try {
-      const res = await supaFetch("hc_members", {
-        method: "POST",
-        headers: { Prefer: "return=representation" },
-        body: JSON.stringify({
-          name: name.trim(),
-          email,
-          phone: phone.trim() || null,
-          whakapapa: whakapapa.trim() || null,
-        }),
-      });
-      if (!res.ok) throw new Error("insert failed");
-      const data = await res.json();
-      onRegistered({ id: data[0].id, name: data[0].name, email });
-    } catch (e) {
-      setErr("Couldn't save your details — please try again.");
-    }
-    setBusy(false);
-  }
-
+function NotRegistered() {
   return (
     <div className="wrap">
-      <div className="card">
-        <label>Full name</label>
-        <input value={name} onChange={e => setName(e.target.value)} placeholder="Your full name" />
-        <label>Phone (optional)</label>
-        <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="021 234 5678" />
-        <label>Whakapapa — name your tūpuna</label>
-        <textarea value={whakapapa} onChange={e => setWhakapapa(e.target.value)} placeholder="Who are your tūpuna? e.g. names of the ancestors that connect you to Parikino, and your hapū/iwi." />
-        {err && <div className="error">{err}</div>}
-        <button className="btn" onClick={submit} disabled={busy}>{busy ? "Saving…" : "Register"}</button>
+      <div className="card thanks center">
+        <div className="icon-circle">✋</div>
+        <h2>Not registered yet</h2>
+        <p style={{ marginBottom: 16 }}>We couldn't find that email on record. Register on the main Parikino Marae site first, then come back here.</p>
+        <a className="link-out" href="/#register">Go to registration →</a>
       </div>
-      <p className="sub center">Your email ({email}) is already set — this is just a one-time registration.</p>
     </div>
   );
 }
 
 function Poll({ member }) {
   const [poll, setPoll] = useState(undefined);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState([]);
+  const [otherChecked, setOtherChecked] = useState(false);
+  const [otherText, setOtherText] = useState("");
   const [freeText, setFreeText] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -211,7 +177,7 @@ function Poll({ member }) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await supaFetch("hc_polls?active=eq.true&select=id,question,options&limit=1");
+        const res = await supaFetch("hc_polls?active=eq.true&select=id,question,options,allow_multiple&limit=1");
         const data = await res.json();
         setPoll(data && data.length ? data[0] : null);
       } catch (e) {
@@ -220,8 +186,23 @@ function Poll({ member }) {
     })();
   }, []);
 
+  function toggleOption(opt) {
+    if (poll.allow_multiple) {
+      setSelected(prev => prev.includes(opt) ? prev.filter(o => o !== opt) : [...prev, opt]);
+    } else {
+      setSelected([opt]);
+    }
+  }
+
   async function submit() {
-    const response = poll.options && poll.options.length ? selected : freeText.trim();
+    let response;
+    if (poll.options && poll.options.length) {
+      const chosen = [...selected];
+      if (otherChecked && otherText.trim()) chosen.push(`Other: ${otherText.trim()}`);
+      response = chosen.join(", ");
+    } else {
+      response = freeText.trim();
+    }
     if (!response) { setErr("Please choose or write an answer first."); return; }
     setBusy(true); setErr("");
     try {
@@ -267,36 +248,40 @@ function Poll({ member }) {
     <div className="wrap">
       <div className="card">
         <label>This week's question</label>
-        <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 19, color: "var(--plum-dark)", marginBottom: 18 }}>{poll.question}</h2>
+        <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 19, color: "var(--plum-dark)", marginBottom: 8 }}>{poll.question}</h2>
+        {poll.allow_multiple && <p style={{ fontSize: 12.5, color: "var(--stone)", marginBottom: 14 }}>Tick as many as you like.</p>}
         {poll.options && poll.options.length > 0 ? (
           <div className="choice-grid">
             {poll.options.map((opt, i) => (
-              <button key={i} className={"choice-btn" + (selected === opt ? " selected" : "")} onClick={() => setSelected(opt)}>{opt}</button>
+              <button key={i} className={"choice-btn" + (selected.includes(opt) ? " selected" : "")} onClick={() => toggleOption(opt)}>{opt}</button>
             ))}
+            <button className={"choice-btn" + (otherChecked ? " selected" : "")} onClick={() => setOtherChecked(!otherChecked)}>Other</button>
+            {otherChecked && (
+              <input type="text" value={otherText} onChange={e => setOtherText(e.target.value)} placeholder="Tell us what else you'd like…" style={{ marginBottom: 0 }} />
+            )}
           </div>
         ) : (
           <textarea value={freeText} onChange={e => setFreeText(e.target.value)} placeholder="Share your whakaaro…" />
         )}
         {err && <div className="error">{err}</div>}
-        <button className="btn" onClick={submit} disabled={busy} style={{ marginTop: 8 }}>{busy ? "Sending…" : "Send answer"}</button>
+        <button className="btn" onClick={submit} disabled={busy} style={{ marginTop: 16 }}>{busy ? "Sending…" : "Send answer"}</button>
       </div>
     </div>
   );
 }
 
 function App() {
-  const [stage, setStage] = useState("gate"); // gate | register | poll
+  const [stage, setStage] = useState("gate"); // gate | not-registered | poll
   const [member, setMember] = useState(null);
-  const [pendingEmail, setPendingEmail] = useState("");
 
   if (stage === "gate") {
     return (
       <React.Fragment>
-        <Header eyebrow="Parikino Marae" title="Hapū Connect" sub="Register your details and share your whakaaro." />
+        <Header eyebrow="Parikino Marae · Hapū Connect" title="Kōrero mai" sub="Enter your email to answer this week's question." />
         <main>
           <EmailGate
             onFound={(m) => { setMember(m); setStage("poll"); }}
-            onNotFound={(email) => { setPendingEmail(email); setStage("register"); }}
+            onNotRegistered={() => setStage("not-registered")}
           />
         </main>
         <Footer />
@@ -304,12 +289,12 @@ function App() {
     );
   }
 
-  if (stage === "register") {
+  if (stage === "not-registered") {
     return (
       <React.Fragment>
-        <Header eyebrow="Parikino Marae · Hapū Connect" title="Welcome" sub="Let's get your details on record." />
+        <Header eyebrow="Parikino Marae · Hapū Connect" title="Kōrero mai" />
         <main>
-          <RegisterForm email={pendingEmail} onRegistered={(m) => { setMember(m); setStage("poll"); }} />
+          <NotRegistered />
         </main>
         <Footer />
       </React.Fragment>
@@ -325,10 +310,6 @@ function App() {
       <Footer />
     </React.Fragment>
   );
-}
-
-function Footer() {
-  return <footer>Nā Parikino Marae Reservation Trust</footer>;
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
