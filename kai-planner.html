@@ -30,9 +30,19 @@
   select,input[type=number]{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;font-size:16px;font-family:inherit;background:#fff;}
   .row{display:flex;gap:12px;}
   .row > div{flex:1;}
-  .chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
-  .chip{padding:8px 14px;border-radius:999px;border:1px solid var(--line);font-size:13px;cursor:pointer;background:#fff;color:var(--ink);}
-  .chip.active{background:var(--plum);border-color:var(--plum);color:#fff;}
+  .add-row{display:flex;gap:8px;margin-top:6px;}
+  .add-row select{flex:1;}
+  .btn-add{flex-shrink:0;background:var(--plum);color:#fff;border:none;border-radius:9px;padding:0 18px;font-weight:600;font-size:14px;cursor:pointer;}
+  .btn-add:disabled{opacity:.4;cursor:default;}
+  .selected-list{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+  .selected-item{border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+  .selected-item-head{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .selected-item-head span{font-weight:600;font-size:14px;color:var(--ink);}
+  .selected-item-actions{display:flex;gap:14px;flex-shrink:0;}
+  .link-btn{background:none;border:none;color:var(--plum);font-size:12.5px;font-weight:600;cursor:pointer;padding:0;}
+  .remove-btn{background:none;border:none;color:#a08fa0;font-size:12.5px;cursor:pointer;padding:0;}
+  .method-list{margin:12px 0 0;padding-left:20px;font-size:13px;color:#4a3f4a;line-height:1.6;}
+  .method-list li{margin-bottom:6px;}
   .result-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
   .result-head h2{font-size:20px;color:var(--plum-dark);}
   .cost{font-size:22px;font-weight:700;color:var(--plum);}
@@ -50,11 +60,7 @@
 <script type="text/babel">
 const { useState, useMemo } = React;
 
-/* ---- Data layer -------------------------------------------------
-   Structure mirrors pk_kai_recipes / pk_kai_ingredients / pk_bulk_options
-   so this can migrate straight to Supabase later (raw fetch, no supabase-js).
-   For now it's seeded locally so the tool works standalone. Edit these
-   arrays directly to add/adjust dishes or update NZ supermarket prices. */
+const CATEGORIES = ["Main", "Bread", "Sweet", "Light"];
 
 const RECIPES = [
   { id: "hangi", name: "Hāngī", category: "Main", perHead: [
@@ -65,6 +71,12 @@ const RECIPES = [
       { item: "Pumpkin", qty: 0.15, unit: "kg" },
       { item: "Cabbage", qty: 0.1, unit: "kg" },
       { item: "Stuffing", qty: 0.08, unit: "kg" },
+  ], method: [
+      "Dig and heat the hāngī pit with stones, or set up your hāngī basket system, at least 3–4 hours before serving.",
+      "Once stones are white-hot, lower the meat baskets first (longest cooking time), then vegetables on top.",
+      "Cover with wet sacks, then soil or a lid, sealing in all steam — no gaps.",
+      "Cook for 3–3.5 hours untouched.",
+      "Uncover carefully, checking meat is cooked through before serving.",
   ]},
   { id: "boilup", name: "Boil-up", category: "Main", perHead: [
       { item: "Pork bones", qty: 0.3, unit: "kg" },
@@ -72,28 +84,55 @@ const RECIPES = [
       { item: "Potato", qty: 0.25, unit: "kg" },
       { item: "Kūmara", qty: 0.15, unit: "kg" },
       { item: "Doughboy flour", qty: 0.08, unit: "kg" },
+  ], method: [
+      "Place pork bones in a large pot, cover with water, and simmer 1.5–2 hours until the meat softens.",
+      "Add potato and kūmara, simmer until just tender.",
+      "Stir through pūhā or watercress in the last 10 minutes.",
+      "Mix doughboy dough (self-raising flour, pinch of salt, water) and drop spoonfuls into the simmering pot for the final 15 minutes.",
+      "Season with salt to taste and serve hot with the broth.",
   ]},
   { id: "cornedbeef", name: "Corned Beef & Cabbage", category: "Main", perHead: [
       { item: "Corned beef (silverside)", qty: 0.25, unit: "kg" },
       { item: "Cabbage", qty: 0.15, unit: "kg" },
       { item: "Potato", qty: 0.3, unit: "kg" },
       { item: "Carrot", qty: 0.1, unit: "kg" },
+  ], method: [
+      "Place corned beef in a large pot, cover with water, add a splash of vinegar and brown sugar.",
+      "Bring to a gentle simmer (don't boil hard) and cook 2.5–3 hours until tender.",
+      "In the last 30 minutes, add potato and carrot to the same pot, or cook separately.",
+      "Steam or boil cabbage separately until just tender — don't overcook.",
+      "Slice the beef against the grain and serve with the vegetables.",
   ]},
   { id: "mince", name: "Mince & Bread", category: "Main", perHead: [
       { item: "Beef mince", qty: 0.15, unit: "kg" },
       { item: "Sliced bread", qty: 0.25, unit: "loaf" },
       { item: "Onion", qty: 0.05, unit: "kg" },
+  ], method: [
+      "Brown the mince in a large pot, breaking it up as it cooks.",
+      "Add diced onion and cook until soft.",
+      "Season, add a splash of water or stock, and simmer 15–20 minutes until thickened.",
+      "Serve spooned over or alongside sliced bread.",
   ]},
   { id: "rewena", name: "Rewena Bread", category: "Bread", perHead: [
       { item: "Flour (high grade)", qty: 0.06, unit: "kg" },
       { item: "Rewena bug/starter", qty: 0.01, unit: "kg" },
       { item: "Potato (for bug)", qty: 0.02, unit: "kg" },
+  ], method: [
+      "Feed your rewena bug with flour and a little warm water the night before baking.",
+      "Mix the bug into flour with a pinch of salt to form a soft dough.",
+      "Knead lightly, shape into rounds, and prove in a warm spot until doubled (2–4 hours).",
+      "Bake at 200°C for 35–40 minutes until golden and hollow-sounding when tapped.",
   ]},
   { id: "pikelets", name: "Pikelets", category: "Sweet", perHead: [
       { item: "Flour (standard)", qty: 0.04, unit: "kg" },
       { item: "Eggs", qty: 0.2, unit: "each" },
       { item: "Milk", qty: 0.06, unit: "L" },
       { item: "Sugar", qty: 0.02, unit: "kg" },
+  ], method: [
+      "Whisk eggs, milk and sugar together.",
+      "Fold in flour (with a pinch of baking powder) until just combined — don't overmix.",
+      "Drop spoonfuls onto a hot, lightly greased griddle.",
+      "Flip once bubbles appear on the surface; cook until golden both sides.",
   ]},
   { id: "morningtea", name: "Morning Tea / Sandwiches", category: "Light", perHead: [
       { item: "Sliced bread", qty: 0.15, unit: "loaf" },
@@ -101,10 +140,18 @@ const RECIPES = [
       { item: "Butter/margarine", qty: 0.015, unit: "kg" },
       { item: "Tea/coffee", qty: 0.01, unit: "kg" },
       { item: "Milk (for tea)", qty: 0.08, unit: "L" },
+  ], method: [
+      "Butter the bread and add your fillings (ham, cheese, egg, or a mix).",
+      "Cut into triangles or fingers and arrange on platters.",
+      "Boil water and set up the tea/coffee station with milk and sugar on the side.",
   ]},
   { id: "fruitcups", name: "Fruit Cups", category: "Light", perHead: [
       { item: "Mixed fruit (seasonal)", qty: 0.15, unit: "kg" },
       { item: "Clear cups", qty: 1, unit: "each" },
+  ], method: [
+      "Wash and chop the fruit into bite-sized pieces.",
+      "Mix varieties together for colour and portion into cups.",
+      "Chill until serving.",
   ]},
   { id: "brownies", name: "Bulk Brownies (make-ahead mix)", category: "Sweet", perHead: [
       { item: "Flour (standard)", qty: 0.0065, unit: "kg" },
@@ -116,6 +163,12 @@ const RECIPES = [
       { item: "Chocolate chips", qty: 0.00375, unit: "kg" },
       { item: "Eggs", qty: 0.125, unit: "each" },
       { item: "Cooking oil", qty: 0.0075, unit: "L" },
+  ], method: [
+      "Mix all dry-mix ingredients together and store in an airtight container ahead of time — this makes enough for several baking batches.",
+      "When ready to bake, combine 2½ cups of the dry mix with 2 eggs, ½ cup oil and ¼ cup water per batch.",
+      "Stir in extra chocolate chips or other add-ins if using.",
+      "Pour into a lined slice tin and bake at 180°C for 20–25 minutes, or until just cooked through.",
+      "Cool before cutting into squares.",
   ]},
   { id: "curriedsausage_mash", name: "Curried Sausages + Mash", category: "Main", perHead: [
       { item: "Sausages", qty: 0.2, unit: "kg" },
@@ -125,6 +178,12 @@ const RECIPES = [
       { item: "Potato", qty: 0.3, unit: "kg" },
       { item: "Milk", qty: 0.05, unit: "L" },
       { item: "Butter/margarine", qty: 0.01, unit: "kg" },
+  ], method: [
+      "Brown the sausages in a large pot or pan, then remove and slice.",
+      "Sauté onion until soft, stir in curry powder and flour, cook 1 minute.",
+      "Gradually add water or stock, stirring until a smooth sauce forms.",
+      "Return sausages to the pot and simmer 15 minutes.",
+      "Boil and mash the potato with milk and butter; serve the curried sausages on top.",
   ]},
   { id: "curriedsausage_rice", name: "Curried/Devilled Sausages + Rice", category: "Main", perHead: [
       { item: "Sausages", qty: 0.2, unit: "kg" },
@@ -132,12 +191,23 @@ const RECIPES = [
       { item: "Onion", qty: 0.05, unit: "kg" },
       { item: "Flour (standard)", qty: 0.01, unit: "kg" },
       { item: "Rice", qty: 0.1, unit: "kg" },
+  ], method: [
+      "Follow the same curried sausage method as with mash (brown sausages, sauté onion, curry powder + flour, add liquid, simmer).",
+      "For a devilled version, stir in a spoonful of tomato sauce, Worcestershire sauce and a little mustard for tang.",
+      "Cook rice separately according to packet directions.",
+      "Serve the sausages and sauce over the rice.",
   ]},
   { id: "focaccia", name: "Focaccia", category: "Bread", perHead: [
       { item: "Flour (high grade)", qty: 0.08, unit: "kg" },
       { item: "Yeast", qty: 0.002, unit: "kg" },
       { item: "Olive oil", qty: 0.02, unit: "L" },
       { item: "Salt", qty: 0.002, unit: "kg" },
+  ], method: [
+      "Mix flour, yeast, salt and water into a wet, sticky dough — no heavy kneading needed.",
+      "Cover and prove 1–2 hours until doubled.",
+      "Press into an oiled tray, dimple all over with your fingers, drizzle generously with olive oil.",
+      "Top with rosemary or other herbs and a good pinch of flaky salt.",
+      "Bake at 220°C for 20–25 minutes until golden.",
   ]},
   { id: "grazingtable", name: "Grazing Table", category: "Light", perHead: [
       { item: "Crackers", qty: 0.05, unit: "kg" },
@@ -146,11 +216,29 @@ const RECIPES = [
       { item: "Mixed fruit (seasonal)", qty: 0.08, unit: "kg" },
       { item: "Dips", qty: 0.03, unit: "kg" },
       { item: "Nuts", qty: 0.02, unit: "kg" },
+  ], method: [
+      "Lay out boards or trays and start with the cheese and dips as anchor points.",
+      "Fan out cured meats and crackers around them.",
+      "Fill gaps with fruit and nuts for colour and texture.",
+      "Keep refilling from the kitchen rather than piling everything out at once, so it stays fresh looking.",
+  ]},
+  { id: "chocpudding", name: "Chocolate Self-Saucing Pudding", category: "Sweet", perHead: [
+      { item: "Flour (standard)", qty: 0.0208, unit: "kg" },
+      { item: "Cocoa powder", qty: 0.004, unit: "kg" },
+      { item: "Sugar (white)", qty: 0.0275, unit: "kg" },
+      { item: "Sugar (brown)", qty: 0.0167, unit: "kg" },
+      { item: "Baking powder", qty: 0.0013, unit: "kg" },
+      { item: "Milk", qty: 0.0208, unit: "L" },
+      { item: "Butter/margarine", qty: 0.0083, unit: "kg" },
+  ], method: [
+      "Mix flour, cocoa, sugar and baking powder, then stir in milk and melted butter to form a batter.",
+      "Spread into a greased baking dish.",
+      "Mix the brown sugar and extra cocoa for the topping and sprinkle evenly over the batter.",
+      "Carefully pour boiling water over the back of a spoon onto the topping — don't stir it in.",
+      "Bake at 180°C for 35–40 minutes until the top is set and the sauce has formed underneath.",
   ]},
 ];
 
-/* Bulk-buy reference prices — NZ ballpark, edit to match your local
-   Costco / PAK'nSAVE / Bin Inn runs. unitPrice = price per kg/L/each/loaf. */
 const BULK = {
   "Pork (bone-in, e.g. pork bones/belly)": { store: "Mad Butcher", pack: "5kg", packPrice: 42.5, unitPrice: 8.5, unit: "kg" },
   "Pork bones": { store: "Mad Butcher", pack: "per kg", packPrice: 6, unitPrice: 6, unit: "kg" },
@@ -203,9 +291,23 @@ const BULK = {
 function KaiPlanner() {
   const [guests, setGuests] = useState(50);
   const [selected, setSelected] = useState(["hangi", "morningtea"]);
+  const [pendingDish, setPendingDish] = useState("");
+  const [expanded, setExpanded] = useState(null);
 
-  const toggle = (id) => {
-    setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+  const addDish = () => {
+    if (pendingDish && !selected.includes(pendingDish)) {
+      setSelected(s => [...s, pendingDish]);
+    }
+    setPendingDish("");
+  };
+
+  const removeDish = (id) => {
+    setSelected(s => s.filter(x => x !== id));
+    if (expanded === id) setExpanded(null);
+  };
+
+  const toggleMethod = (id) => {
+    setExpanded(e => e === id ? null : id);
   };
 
   const results = useMemo(() => {
@@ -219,20 +321,12 @@ function KaiPlanner() {
         const bulk = BULK[ing.item];
         let packsNeeded = null, lineCost = null;
         if (bulk) {
-          const packUnitQty = bulk.packPrice / bulk.unitPrice; // qty per pack in native unit
+          const packUnitQty = bulk.packPrice / bulk.unitPrice;
           packsNeeded = Math.ceil(totalQty / packUnitQty) || 0;
           lineCost = packsNeeded * bulk.packPrice;
           totalCost += lineCost;
         }
-        rows.push({
-          dish: r.name,
-          item: ing.item,
-          totalQty: totalQty,
-          unit: ing.unit,
-          bulk,
-          packsNeeded,
-          lineCost,
-        });
+        rows.push({ dish: r.name, item: ing.item, totalQty, unit: ing.unit, bulk, packsNeeded, lineCost });
       });
     });
     return { rows, totalCost };
@@ -255,16 +349,44 @@ function KaiPlanner() {
         />
 
         <label style={{marginTop:16}}>What are you serving?</label>
-        <div className="chip-group">
-          {RECIPES.map(r => (
-            <div
-              key={r.id}
-              className={"chip" + (selected.includes(r.id) ? " active" : "")}
-              onClick={() => toggle(r.id)}
-            >
-              {r.name}
-            </div>
-          ))}
+        <div className="add-row">
+          <select value={pendingDish} onChange={e => setPendingDish(e.target.value)}>
+            <option value="">Choose a dish…</option>
+            {CATEGORIES.map(cat => (
+              <optgroup label={cat} key={cat}>
+                {RECIPES.filter(r => r.category === cat).map(r => (
+                  <option key={r.id} value={r.id} disabled={selected.includes(r.id)}>{r.name}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          <button className="btn-add" onClick={addDish} disabled={!pendingDish}>Add</button>
+        </div>
+
+        <div className="selected-list">
+          {selected.length === 0 && <div className="empty">No dishes added yet.</div>}
+          {selected.map(id => {
+            const r = RECIPES.find(x => x.id === id);
+            if (!r) return null;
+            return (
+              <div className="selected-item" key={id}>
+                <div className="selected-item-head">
+                  <span>{r.name}</span>
+                  <div className="selected-item-actions">
+                    <button className="link-btn" onClick={() => toggleMethod(id)}>
+                      {expanded === id ? "Hide recipe" : "How to"}
+                    </button>
+                    <button className="remove-btn" onClick={() => removeDish(id)}>Remove</button>
+                  </div>
+                </div>
+                {expanded === id && (
+                  <ol className="method-list">
+                    {r.method.map((step, i) => <li key={i}>{step}</li>)}
+                  </ol>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -278,7 +400,7 @@ function KaiPlanner() {
         </div>
 
         {results.rows.length === 0 ? (
-          <div className="empty">Pick at least one dish above to see quantities.</div>
+          <div className="empty">Add at least one dish above to see quantities.</div>
         ) : (
           <table>
             <thead>
@@ -307,7 +429,7 @@ function KaiPlanner() {
           </table>
         )}
         <div className="footnote">
-          Quantities are guidelines based on average marae serving sizes — adjust for known big eaters, kaumātua portions, or if kai's going home with people. Prices are sourced against Gilmours (wholesale pantry/bakery), Mad Butcher (meat), and St Hill's / Hill Street Greens (fresh produce) where public pricing exists, and estimated elsewhere — none of these publish a full live price list online, so confirm current prices in-store or with your rep and update the BULK table in this file as needed.
+          Quantities are guidelines based on average marae serving sizes — adjust for known big eaters, kaumātua portions, or if kai's going home with people. Prices are sourced against Gilmours (wholesale pantry/bakery), Mad Butcher (meat), St Hill's / Hill Street Greens (fresh produce), and PAK'nSAVE (retail baking basics) where public pricing exists, and estimated elsewhere — none of these publish a full live price list online, so confirm current prices in-store or with your rep and update the BULK table in this file as needed.
           <br/><br/>
           Rewena: if there's no active potato bug going, check with kaumātua or whānau first — someone usually has one — otherwise budget 5–7 days to grow a new one before baking.
         </div>
