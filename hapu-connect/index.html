@@ -3,75 +3,55 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Hapū Connect — Parikino Marae</title>
-<meta name="description" content="Share your whakaaro with Parikino Marae.">
+<title>Whānau Check-In — Parikino Marae</title>
+<meta name="description" content="Let's reconnect — a quick check-in with Parikino Marae.">
 <meta name="theme-color" content="#653366">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --plum:#653366;
-  --plum-dark:#472448;
-  --periwinkle:#666698;
-  --paper:#FAF8F6;
-  --paper2:#F0EAEF;
-  --ink:#2B2030;
-  --stone:#7C7284;
-  --line:#E3D9E2;
+  --plum:#653366; --plum-dark:#472448; --periwinkle:#666698;
+  --paper:#FAF8F6; --paper2:#F0EAEF; --ink:#2B2030; --stone:#7C7284; --line:#E3D9E2;
+  --good:#2E7D32;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Inter',sans-serif;
-  background:var(--paper);
-  color:var(--ink);
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
 .wrap{max-width:480px;margin:0 auto;padding:0 24px;width:100%}
 header{padding:28px 0 8px}
 .eyebrow{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--periwinkle);text-transform:uppercase}
-h1{font-family:'Playfair Display',serif;font-weight:700;font-size:26px;color:var(--plum);margin-top:4px}
+h1{font-family:'Playfair Display',serif;font-weight:700;font-size:24px;color:var(--plum);margin-top:4px}
 .sub{color:var(--stone);font-size:14px;margin-top:6px}
-main{flex:1;padding:24px 0 48px}
-.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:16px}
-label{display:block;font-size:12px;font-weight:700;color:var(--plum-dark);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
-input,textarea{
-  width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;
-  font-family:'Inter',sans-serif;font-size:15px;color:var(--ink);background:var(--paper);
-  margin-bottom:18px;
-}
+main{flex:1;padding:20px 0 48px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:16px}
+label{display:block;font-size:12.5px;font-weight:700;color:var(--plum-dark);margin-bottom:8px;line-height:1.4}
+input,textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;font-family:'Inter',sans-serif;font-size:15px;color:var(--ink);background:var(--paper);margin-bottom:4px}
 input:focus,textarea:focus{outline:none;border-color:var(--periwinkle)}
-textarea{min-height:80px;resize:vertical}
-.btn{
-  display:block;width:100%;padding:14px;border:none;border-radius:10px;
-  background:var(--plum);color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:15px;
-  cursor:pointer;transition:background .15s;
-}
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:10px;background:var(--plum);color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:15px;cursor:pointer}
 .btn:hover{background:var(--plum-dark)}
 .btn:disabled{background:var(--stone);cursor:not-allowed}
-.choice-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
-.choice-btn{
-  display:block;width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:10px;
-  background:#fff;color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;text-align:left;
-  cursor:pointer;transition:all .15s;
-}
-.choice-btn:hover{border-color:var(--periwinkle);background:var(--paper2)}
-.choice-btn.selected{border-color:var(--plum);background:var(--paper2);font-weight:700;color:var(--plum-dark)}
-.error{color:#B3261E;font-size:13px;margin-top:-10px;margin-bottom:14px}
+.choice-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.chip{padding:10px 14px;border:1.5px solid var(--line);border-radius:20px;background:#fff;color:var(--ink);font-family:'Inter',sans-serif;font-size:13.5px;cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--periwinkle)}
+.chip.selected{border-color:var(--plum);background:var(--plum);color:#fff;font-weight:700}
+.q{margin-bottom:26px}
+.q:last-child{margin-bottom:8px}
+.error{color:#B3261E;font-size:13px;margin-top:10px}
 .center{text-align:center}
-.icon-circle{
-  width:56px;height:56px;border-radius:50%;background:var(--paper2);color:var(--plum);
-  display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;
-}
-.thanks h2{font-family:'Playfair Display',serif;font-size:22px;color:var(--plum-dark);margin-bottom:8px}
+.icon-circle{width:56px;height:56px;border-radius:50%;background:var(--paper2);color:var(--plum);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px}
+.thanks h2{font-family:'Playfair Display',serif;font-size:21px;color:var(--plum-dark);margin-bottom:8px}
 .thanks p{color:var(--stone);font-size:14px}
-.link-out{color:var(--plum);font-weight:600;text-decoration:none;border-bottom:1.5px solid var(--periwinkle)}
-footer{padding:16px 24px 28px;text-align:center;color:var(--stone);font-size:11px}
 .loading{text-align:center;padding:60px 0;color:var(--stone);font-size:14px}
+footer{padding:16px 24px 28px;text-align:center;color:var(--stone);font-size:11px}
+
+/* thermometer */
+.therm-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:20px}
+.therm-label{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.therm-label .goal{font-size:12.5px;color:var(--stone);font-weight:600}
+.therm-label .count{font-family:'Playfair Display',serif;font-weight:700;font-size:22px;color:var(--plum-dark)}
+.therm-track{height:14px;background:var(--paper2);border-radius:8px;overflow:hidden}
+.therm-fill{height:100%;background:linear-gradient(90deg,var(--periwinkle),var(--plum));border-radius:8px;transition:width .6s ease}
+.therm-caption{font-size:12px;color:var(--stone);margin-top:8px;text-align:center}
 </style>
 </head>
 <body>
@@ -86,9 +66,10 @@ const { useState, useEffect } = React;
 
 const SUPABASE_URL = "https://iqxvqndfroegvhcipqkn.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_sdBnR2sC_u8i6gFrydvcbA_8qBpTtbS";
+const GOAL = 500;
 
 async function supaFetch(path, options = {}) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     ...options,
     headers: {
       apikey: SUPABASE_ANON_KEY,
@@ -97,7 +78,6 @@ async function supaFetch(path, options = {}) {
       ...(options.headers || {}),
     },
   });
-  return res;
 }
 
 function Header({ eyebrow, title, sub }) {
@@ -109,9 +89,22 @@ function Header({ eyebrow, title, sub }) {
     </header>
   );
 }
+function Footer() { return <footer>Nā Parikino Marae Reservation Trust</footer>; }
 
-function Footer() {
-  return <footer>Nā Parikino Marae Reservation Trust</footer>;
+function Thermometer({ count }) {
+  const pct = Math.min(100, Math.round((count / GOAL) * 100));
+  return (
+    <div className="wrap">
+      <div className="therm-wrap">
+        <div className="therm-label">
+          <span className="goal">GOAL: {GOAL} WHĀNAU</span>
+          <span className="count">{count === null ? "…" : count}</span>
+        </div>
+        <div className="therm-track"><div className="therm-fill" style={{ width: (count === null ? 0 : pct) + "%" }}></div></div>
+        <div className="therm-caption">{count === null ? "Loading…" : `${pct}% of the way there — ngā mihi to everyone who's checked in.`}</div>
+      </div>
+    </div>
+  );
 }
 
 function EmailGate({ onFound, onNotRegistered }) {
@@ -145,7 +138,7 @@ function EmailGate({ onFound, onNotRegistered }) {
         <label>Your email</label>
         <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" onKeyDown={e => e.key === "Enter" && check()} />
         {err && <div className="error">{err}</div>}
-        <button className="btn" onClick={check} disabled={busy}>{busy ? "Checking…" : "Continue"}</button>
+        <button className="btn" onClick={check} disabled={busy} style={{ marginTop: 14 }}>{busy ? "Checking…" : "Continue"}</button>
       </div>
     </div>
   );
@@ -158,131 +151,193 @@ function NotRegistered() {
         <div className="icon-circle">✋</div>
         <h2>Not registered yet</h2>
         <p style={{ marginBottom: 16 }}>We couldn't find that email on record. Register on the main Parikino Marae site first, then come back here.</p>
-        <a className="link-out" href="/#register">Go to registration →</a>
+        <a href="/#register" style={{ color: "var(--plum)", fontWeight: 600, textDecoration: "none", borderBottom: "1.5px solid var(--periwinkle)" }}>Go to registration →</a>
       </div>
     </div>
   );
 }
 
-function Poll({ member }) {
-  const [poll, setPoll] = useState(undefined);
-  const [selected, setSelected] = useState([]);
-  const [otherChecked, setOtherChecked] = useState(false);
-  const [otherText, setOtherText] = useState("");
-  const [freeText, setFreeText] = useState("");
+function Chips({ options, multi, value, onChange, otherValue, onOtherChange, hasOther }) {
+  const selected = multi ? (value || []) : (value ? [value] : []);
+  function toggle(opt) {
+    if (multi) {
+      onChange(selected.includes(opt) ? selected.filter(o => o !== opt) : [...selected, opt]);
+    } else {
+      onChange(opt);
+    }
+  }
+  return (
+    <div>
+      <div className="choice-row">
+        {options.map((opt, i) => (
+          <button key={i} type="button" className={"chip" + (selected.includes(opt) ? " selected" : "")} onClick={() => toggle(opt)}>{opt}</button>
+        ))}
+        {hasOther && (
+          <button type="button" className={"chip" + (selected.includes("Other") ? " selected" : "")} onClick={() => toggle("Other")}>Other</button>
+        )}
+      </div>
+      {hasOther && selected.includes("Other") && (
+        <input type="text" value={otherValue || ""} onChange={e => onOtherChange(e.target.value)} placeholder="Tell us more…" style={{ marginTop: 6 }} />
+      )}
+    </div>
+  );
+}
+
+function CheckinForm({ member, onDone }) {
+  const [a, setA] = useState({});
+  const [otherRole, setOtherRole] = useState("");
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
   const [err, setErr] = useState("");
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await supaFetch("hc_polls?active=eq.true&select=id,question,options,allow_multiple&limit=1");
-        const data = await res.json();
-        setPoll(data && data.length ? data[0] : null);
-      } catch (e) {
-        setPoll(null);
-      }
-    })();
-  }, []);
-
-  function toggleOption(opt) {
-    if (poll.allow_multiple) {
-      setSelected(prev => prev.includes(opt) ? prev.filter(o => o !== opt) : [...prev, opt]);
-    } else {
-      setSelected([opt]);
-    }
-  }
+  function set(key, val) { setA(prev => ({ ...prev, [key]: val })); }
 
   async function submit() {
-    let response;
-    if (poll.options && poll.options.length) {
-      const chosen = [...selected];
-      if (otherChecked && otherText.trim()) chosen.push(`Other: ${otherText.trim()}`);
-      response = chosen.join(", ");
-    } else {
-      response = freeText.trim();
-    }
-    if (!response) { setErr("Please choose or write an answer first."); return; }
+    const required = ["living_in_whanganui", "hui_interest", "wants_updates", "reo_confidence", "tikanga_familiarity", "age_bracket", "has_tamariki_at_home", "employment_status", "education_level", "housing_status", "vehicle_access", "internet_access", "accessibility_needs", "marae_visit_frequency"];
+    const missing = required.filter(k => !a[k]);
+    if (missing.length) { setErr("Please answer every question before sending — just a few more to go."); return; }
+
     setBusy(true); setErr("");
+    let roles = (a.event_help_roles || []).filter(r => r !== "Other");
+    if ((a.event_help_roles || []).includes("Other") && otherRole.trim()) roles.push(`Other: ${otherRole.trim()}`);
+
     try {
-      const res = await supaFetch("hc_poll_responses", {
+      const res = await supaFetch("hc_checkin_responses", {
         method: "POST",
-        body: JSON.stringify({ poll_id: poll.id, member_id: member.id, response }),
+        body: JSON.stringify({
+          member_id: member.id,
+          living_in_whanganui: a.living_in_whanganui,
+          hui_interest: a.hui_interest,
+          event_help_roles: roles.join(", ") || null,
+          wants_updates: a.wants_updates,
+          reo_confidence: a.reo_confidence,
+          tikanga_familiarity: a.tikanga_familiarity,
+          age_bracket: a.age_bracket,
+          has_tamariki_at_home: a.has_tamariki_at_home,
+          employment_status: a.employment_status,
+          education_level: a.education_level,
+          housing_status: a.housing_status,
+          vehicle_access: a.vehicle_access,
+          internet_access: a.internet_access,
+          accessibility_needs: a.accessibility_needs,
+          marae_visit_frequency: a.marae_visit_frequency,
+        }),
       });
-      if (!res.ok) throw new Error("insert failed");
-      setDone(true);
+      if (!res.ok) throw new Error("save failed");
+      onDone();
     } catch (e) {
-      setErr("Couldn't send your answer — please try again.");
+      setErr("Couldn't send your answers — please try again.");
     }
     setBusy(false);
-  }
-
-  if (poll === undefined) return <div className="loading">Loading…</div>;
-
-  if (done) {
-    return (
-      <div className="wrap">
-        <div className="card thanks center">
-          <div className="icon-circle">✓</div>
-          <h2>Ngā mihi, {member.name.split(" ")[0]}</h2>
-          <p>Your whakaaro has been recorded. Thank you for taking a moment to share it.</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!poll) {
-    return (
-      <div className="wrap">
-        <div className="card thanks center">
-          <div className="icon-circle">🤍</div>
-          <h2>Kia ora, {member.name.split(" ")[0]}</h2>
-          <p>There's no question open right now — check back again soon.</p>
-        </div>
-      </div>
-    );
   }
 
   return (
     <div className="wrap">
       <div className="card">
-        <label>This week's question</label>
-        <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 19, color: "var(--plum-dark)", marginBottom: 8 }}>{poll.question}</h2>
-        {poll.allow_multiple && <p style={{ fontSize: 12.5, color: "var(--stone)", marginBottom: 14 }}>Tick as many as you like.</p>}
-        {poll.options && poll.options.length > 0 ? (
-          <div className="choice-grid">
-            {poll.options.map((opt, i) => (
-              <button key={i} className={"choice-btn" + (selected.includes(opt) ? " selected" : "")} onClick={() => toggleOption(opt)}>{opt}</button>
-            ))}
-            <button className={"choice-btn" + (otherChecked ? " selected" : "")} onClick={() => setOtherChecked(!otherChecked)}>Other</button>
-            {otherChecked && (
-              <input type="text" value={otherText} onChange={e => setOtherText(e.target.value)} placeholder="Tell us what else you'd like…" style={{ marginBottom: 0 }} />
-            )}
-          </div>
-        ) : (
-          <textarea value={freeText} onChange={e => setFreeText(e.target.value)} placeholder="Share your whakaaro…" />
-        )}
+
+        <div className="q">
+          <label>Are you currently living in Whanganui?</label>
+          <Chips options={["Yes", "No"]} value={a.living_in_whanganui} onChange={v => set("living_in_whanganui", v)} />
+        </div>
+
+        <div className="q">
+          <label>If we held a hui (in person or online), would you be keen to join?</label>
+          <Chips options={["Yes, in person", "Yes, by Zoom", "No"]} value={a.hui_interest} onChange={v => set("hui_interest", v)} />
+        </div>
+
+        <div className="q">
+          <label>We're building a pool of whānau who can help out at marae events — which of these could we call on you for?</label>
+          <Chips options={["Kai kōrero", "Kaikaranga", "Hall set-up", "Cooking/baking"]} multi value={a.event_help_roles} onChange={v => set("event_help_roles", v)} hasOther otherValue={otherRole} onOtherChange={setOtherRole} />
+        </div>
+
+        <div className="q">
+          <label>Do you want to receive updates about upcoming wānanga or hui?</label>
+          <Chips options={["Yes", "No"]} value={a.wants_updates} onChange={v => set("wants_updates", v)} />
+        </div>
+
+        <div className="q">
+          <label>How confident are you with Te Reo Māori?</label>
+          <Chips options={["Fluent", "Some understanding", "Learning", "None"]} value={a.reo_confidence} onChange={v => set("reo_confidence", v)} />
+        </div>
+
+        <div className="q">
+          <label>Are you familiar with our tikanga?</label>
+          <Chips options={["Yes, very familiar", "Somewhat familiar", "Still learning", "Not really"]} value={a.tikanga_familiarity} onChange={v => set("tikanga_familiarity", v)} />
+        </div>
+
+        <div className="q">
+          <label>What age bracket are you in?</label>
+          <Chips options={["Under 18", "18–24", "25–39", "40–59", "60+"]} value={a.age_bracket} onChange={v => set("age_bracket", v)} />
+        </div>
+
+        <div className="q">
+          <label>Do you have tamariki at home?</label>
+          <Chips options={["Yes", "No"]} value={a.has_tamariki_at_home} onChange={v => set("has_tamariki_at_home", v)} />
+        </div>
+
+        <div className="q">
+          <label>Current employment situation</label>
+          <Chips options={["Employed full-time", "Employed part-time", "Self-employed", "Studying", "Not currently working", "Retired"]} value={a.employment_status} onChange={v => set("employment_status", v)} />
+        </div>
+
+        <div className="q">
+          <label>Highest level of education completed</label>
+          <Chips options={["Secondary school", "Trade or vocational", "Undergraduate degree", "Postgraduate", "Other"]} value={a.education_level} onChange={v => set("education_level", v)} />
+        </div>
+
+        <div className="q">
+          <label>Do you own your home, rent, or live with whānau?</label>
+          <Chips options={["Own", "Renting", "Living with whānau", "Other"]} value={a.housing_status} onChange={v => set("housing_status", v)} />
+        </div>
+
+        <div className="q">
+          <label>Do you have reliable access to a vehicle?</label>
+          <Chips options={["Yes", "No", "Sometimes"]} value={a.vehicle_access} onChange={v => set("vehicle_access", v)} />
+        </div>
+
+        <div className="q">
+          <label>Do you have reliable internet at home?</label>
+          <Chips options={["Yes", "No", "Sometimes"]} value={a.internet_access} onChange={v => set("internet_access", v)} />
+        </div>
+
+        <div className="q">
+          <label>Does anyone in your household have accessibility needs (mobility, vision, hearing etc.)?</label>
+          <Chips options={["Yes", "No", "Prefer not to say"]} value={a.accessibility_needs} onChange={v => set("accessibility_needs", v)} />
+        </div>
+
+        <div className="q">
+          <label>How often do you currently visit the marae?</label>
+          <Chips options={["Regularly", "Occasionally", "Rarely", "Never been"]} value={a.marae_visit_frequency} onChange={v => set("marae_visit_frequency", v)} />
+        </div>
+
         {err && <div className="error">{err}</div>}
-        <button className="btn" onClick={submit} disabled={busy} style={{ marginTop: 16 }}>{busy ? "Sending…" : "Send answer"}</button>
+        <button className="btn" onClick={submit} disabled={busy} style={{ marginTop: 8 }}>{busy ? "Sending…" : "Send my answers"}</button>
       </div>
     </div>
   );
 }
 
 function App() {
-  const [stage, setStage] = useState("gate"); // gate | not-registered | poll
+  const [stage, setStage] = useState("gate");
   const [member, setMember] = useState(null);
+  const [count, setCount] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await supaFetch("rpc/hc_checkin_count", { method: "POST", body: "{}" });
+        const data = await res.json();
+        setCount(typeof data === "number" ? data : 0);
+      } catch (e) { setCount(0); }
+    })();
+  }, [stage]);
 
   if (stage === "gate") {
     return (
       <React.Fragment>
-        <Header eyebrow="Parikino Marae · Hapū Connect" title="Kōrero mai" sub="Enter your email to answer this week's question." />
+        <Header eyebrow="Parikino Marae · Whānau Check-In" title="Let's reconnect" sub="A few quick questions to help us plan future kaupapa." />
+        <Thermometer count={count} />
         <main>
-          <EmailGate
-            onFound={(m) => { setMember(m); setStage("poll"); }}
-            onNotRegistered={() => setStage("not-registered")}
-          />
+          <EmailGate onFound={m => { setMember(m); setStage("form"); }} onNotRegistered={() => setStage("not-registered")} />
         </main>
         <Footer />
       </React.Fragment>
@@ -292,9 +347,26 @@ function App() {
   if (stage === "not-registered") {
     return (
       <React.Fragment>
-        <Header eyebrow="Parikino Marae · Hapū Connect" title="Kōrero mai" />
+        <Header eyebrow="Parikino Marae · Whānau Check-In" title="Let's reconnect" />
+        <main><NotRegistered /></main>
+        <Footer />
+      </React.Fragment>
+    );
+  }
+
+  if (stage === "done") {
+    return (
+      <React.Fragment>
+        <Header eyebrow="Parikino Marae · Whānau Check-In" title="Let's reconnect" />
+        <Thermometer count={count} />
         <main>
-          <NotRegistered />
+          <div className="wrap">
+            <div className="card thanks center">
+              <div className="icon-circle">✓</div>
+              <h2>Ngā mihi nui, {member.name.split(" ")[0]}</h2>
+              <p>Your whakaaro matters — thank you for taking the time to reconnect with us.</p>
+            </div>
+          </div>
         </main>
         <Footer />
       </React.Fragment>
@@ -303,9 +375,9 @@ function App() {
 
   return (
     <React.Fragment>
-      <Header eyebrow="Parikino Marae · Hapū Connect" title="Kōrero mai" />
+      <Header eyebrow="Parikino Marae · Whānau Check-In" title="Let's reconnect" sub="A few quick questions to help us plan future kaupapa." />
       <main>
-        <Poll member={member} />
+        <CheckinForm member={member} onDone={() => setStage("done")} />
       </main>
       <Footer />
     </React.Fragment>
