@@ -196,7 +196,7 @@ function PrivacyNote() {
   );
 }
 
-function CheckinForm({ member, onDone }) {
+function CheckinForm({ onDone }) {
   const [a, setA] = useState({});
   const [otherRole, setOtherRole] = useState("");
   const [busy, setBusy] = useState(false);
@@ -217,7 +217,6 @@ function CheckinForm({ member, onDone }) {
       const res = await supaFetch("hc_checkin_responses", {
         method: "POST",
         body: JSON.stringify({
-          member_id: member.id,
           living_in_whanganui: a.living_in_whanganui,
           hui_interest: a.hui_interest,
           event_help_roles: roles.join(", ") || null,
@@ -330,8 +329,7 @@ function CheckinForm({ member, onDone }) {
 }
 
 function App() {
-  const [stage, setStage] = useState("gate");
-  const [member, setMember] = useState(null);
+  const [stage, setStage] = useState("form");
   const [count, setCount] = useState(null);
 
   useEffect(() => {
@@ -344,29 +342,6 @@ function App() {
     })();
   }, [stage]);
 
-  if (stage === "gate") {
-    return (
-      <React.Fragment>
-        <Header eyebrow="Parikino Marae · Whānau Check-In" title="Let's reconnect" sub="A few quick questions to help us plan future kaupapa." />
-        <Thermometer count={count} />
-        <main>
-          <EmailGate onFound={m => { setMember(m); setStage("form"); }} onNotRegistered={() => setStage("not-registered")} />
-        </main>
-        <Footer />
-      </React.Fragment>
-    );
-  }
-
-  if (stage === "not-registered") {
-    return (
-      <React.Fragment>
-        <Header eyebrow="Parikino Marae · Whānau Check-In" title="Let's reconnect" />
-        <main><NotRegistered /></main>
-        <Footer />
-      </React.Fragment>
-    );
-  }
-
   if (stage === "done") {
     return (
       <React.Fragment>
@@ -376,7 +351,7 @@ function App() {
           <div className="wrap">
             <div className="card thanks center">
               <div className="icon-circle">✓</div>
-              <h2>Ngā mihi nui, {member.name.split(" ")[0]}</h2>
+              <h2>Ngā mihi nui</h2>
               <p>Your whakaaro matters — thank you for taking the time to reconnect with us.</p>
             </div>
           </div>
@@ -389,9 +364,10 @@ function App() {
   return (
     <React.Fragment>
       <Header eyebrow="Parikino Marae · Whānau Check-In" title="Let's reconnect" sub="A few quick questions to help us plan future kaupapa." />
+      <Thermometer count={count} />
       <main>
         <PrivacyNote />
-        <CheckinForm member={member} onDone={() => setStage("done")} />
+        <CheckinForm onDone={() => setStage("done")} />
       </main>
       <Footer />
     </React.Fragment>
