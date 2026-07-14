@@ -289,10 +289,6 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
         <input type="text" id="regName" required>
         <label>Email</label>
         <input type="email" id="regEmail" required>
-        <label>How many in your household</label>
-        <input type="number" id="regHousehold" min="1">
-        <label>Where do you live</label>
-        <input type="text" id="regLocation" placeholder="Town or region">
         <label>Whānau name</label>
         <input type="text" id="regWhanau" placeholder="Your whānau name">
         <button type="submit" id="regSubmit">Register</button>
@@ -300,7 +296,7 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
       </form>
     </div>
     <p class="center" style="margin-top:18px">
-      <a href="hapu-connect/" style="color:var(--plum);font-weight:600;text-decoration:none;font-size:13px;border-bottom:1.5px solid var(--periwinkle)">Already registered? Answer this week's question →</a>
+      <a href="hapu-connect/" style="color:var(--plum);font-weight:600;text-decoration:none;font-size:13px;border-bottom:1.5px solid var(--periwinkle)">Share your whakaaro →</a>
     </p>
   </div>
 </section>
@@ -331,8 +327,6 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
     e.preventDefault();
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim().toLowerCase();
-    const household = document.getElementById('regHousehold').value.trim();
-    const location = document.getElementById('regLocation').value.trim();
     const whanau = document.getElementById('regWhanau').value.trim();
 
     if(!name || !email){
@@ -358,8 +352,6 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
         body: JSON.stringify({
           name: name,
           email: email,
-          household_size: household ? parseInt(household, 10) : null,
-          location: location || null,
           whanau_name: whanau || null
         })
       });
