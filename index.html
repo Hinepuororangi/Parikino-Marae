@@ -104,6 +104,24 @@ h2.center{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(2
 .infopanel p{font-size:14px;color:#453A48}
 .infopanel a{color:var(--plum);font-weight:600;text-decoration:none;display:inline-block;margin-top:10px;font-size:13px;border-bottom:1.5px solid var(--periwinkle)}
 .infopanel + .infopanel{margin-top:2px}
+.reg-section{padding:48px 0}
+.reg-form label{display:block;font-size:11px;font-weight:700;color:var(--plum-dark);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;margin-top:16px}
+.reg-form label:first-child{margin-top:0}
+.reg-form input,.reg-form textarea{
+  width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:8px;
+  font-family:'Inter',sans-serif;font-size:15px;color:var(--ink);background:#fff;
+}
+.reg-form input:focus,.reg-form textarea:focus{outline:none;border-color:var(--periwinkle)}
+.reg-form textarea{min-height:80px;resize:vertical}
+.reg-form button{
+  margin-top:20px;width:100%;padding:14px;border:none;border-radius:8px;
+  background:var(--plum);color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:14px;
+  cursor:pointer;
+}
+.reg-form button:disabled{background:var(--stone)}
+.reg-msg{margin-top:14px;font-size:13.5px;text-align:center}
+.reg-msg.ok{color:#2E7D32}
+.reg-msg.err{color:#B3261E}
 
 /* ---- kawa : simple list ---- */
 .kawa ul{list-style:none}
@@ -174,7 +192,9 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
   </a>
   <a class="qlink" href="#tangi">
     <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-9.5-8.8C1 9 2.3 5.5 5.6 5c2-.3 3.6.8 4.4 2.3C10.8 5.8 12.4 4.7 14.4 5c3.3.5 4.6 4 3.1 7.2C15 16.6 12 21 12 21z"/></svg></div>
-    <span>Tangihanga</span>
+  <a class="qlink" href="#register">
+    <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    <span>Hapū Connect</span>
   </a>
 </div>
 
@@ -260,6 +280,31 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
   </div>
 </section>
 
+<section class="reg-section" id="register">
+  <div class="wrap">
+    <div class="eyebrow">Hapū Connect</div>
+    <h2 class="center">Register your whānau</h2>
+    <p class="center" style="color:var(--stone);font-size:14px;margin-top:8px;margin-bottom:24px">Get your details on record with the marae — takes a minute.</p>
+    <div class="infopanel">
+      <form class="reg-form" id="regForm">
+        <label>Full name</label>
+        <input type="text" id="regName" required>
+        <label>Email</label>
+        <input type="email" id="regEmail" required>
+        <label>Phone (optional)</label>
+        <input type="tel" id="regPhone">
+        <label>Whakapapa — name your tūpuna</label>
+        <textarea id="regWhakapapa" placeholder="Who are your tūpuna? e.g. names of the ancestors that connect you to Parikino, and your hapū/iwi."></textarea>
+        <button type="submit" id="regSubmit">Register</button>
+        <div class="reg-msg" id="regMsg"></div>
+      </form>
+    </div>
+    <p class="center" style="margin-top:18px">
+      <a href="hapu-connect/" class="link-outward" style="color:var(--plum);font-weight:600;text-decoration:none;font-size:13px;border-bottom:1.5px solid var(--periwinkle)">Already registered? Answer this week's question →</a>
+    </p>
+  </div>
+</section>
+
 <div class="closing">
   <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6c0 5.4-8.8 11.4-8.8 11.4S3.2 14 3.2 8.6a5.6 5.6 0 0 1 8.8-4.6 5.6 5.6 0 0 1 8.8 4.6z"/></svg>
   <h2>Nau mai, haere mai</h2>
@@ -274,5 +319,68 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
   <div style="margin-top:14px"><a href="https://parikino-os-v2.vercel.app/" style="color:#D6C7D5;text-decoration:underline;font-size:11px;letter-spacing:.03em">Trustee login →</a></div>
 </footer>
 
+<script>
+(function(){
+  const SUPABASE_URL = "https://iqxvqndfroegvhcipqkn.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_sdBnR2sC_u8i6gFrydvcbA_8qBpTtbS";
+  const form = document.getElementById('regForm');
+  const submitBtn = document.getElementById('regSubmit');
+  const msg = document.getElementById('regMsg');
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const phone = document.getElementById('regPhone').value.trim();
+    const whakapapa = document.getElementById('regWhakapapa').value.trim();
+
+    if(!name || !email){
+      msg.textContent = 'Please fill in your name and email.';
+      msg.className = 'reg-msg err';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving…';
+    msg.textContent = '';
+    msg.className = 'reg-msg';
+
+    try{
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/hc_members`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          phone: phone || null,
+          whakapapa: whakapapa || null
+        })
+      });
+
+      if(res.ok){
+        form.reset();
+        msg.textContent = 'Ngā mihi — your details have been recorded.';
+        msg.className = 'reg-msg ok';
+      } else if(res.status === 409){
+        msg.textContent = 'That email is already registered — ngā mihi, you\'re already on record.';
+        msg.className = 'reg-msg ok';
+      } else {
+        throw new Error('save failed');
+      }
+    }catch(err){
+      msg.textContent = "Couldn't save your details — please try again.";
+      msg.className = 'reg-msg err';
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Register';
+  });
+})();
+</script>
 </body>
 </html>
