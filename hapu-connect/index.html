@@ -183,6 +183,19 @@ function Chips({ options, multi, value, onChange, otherValue, onOtherChange, has
   );
 }
 
+function PrivacyNote() {
+  return (
+    <div className="wrap">
+      <div className="card" style={{ background: "var(--paper2)", fontSize: 13, color: "var(--stone)", lineHeight: 1.6 }}>
+        <div style={{ fontWeight: 700, color: "var(--plum-dark)", marginBottom: 6 }}>🔒 Privacy</div>
+        <p style={{ marginBottom: 8 }}>This check-in helps us plan future hui, wānanga, and support — and understand our whānau better.</p>
+        <p style={{ marginBottom: 8 }}>We're collecting this to: help organise future hui, build our pool of whānau who can help out, and understand how to strengthen support, reo, and mahi together.</p>
+        <p>Your answers are only seen by the organising team, never shared outside it, and you can ask us to update or delete your info anytime.</p>
+      </div>
+    </div>
+  );
+}
+
 function CheckinForm({ member, onDone }) {
   const [a, setA] = useState({});
   const [otherRole, setOtherRole] = useState("");
@@ -377,6 +390,7 @@ function App() {
     <React.Fragment>
       <Header eyebrow="Parikino Marae · Whānau Check-In" title="Let's reconnect" sub="A few quick questions to help us plan future kaupapa." />
       <main>
+        <PrivacyNote />
         <CheckinForm member={member} onDone={() => setStage("done")} />
       </main>
       <Footer />
