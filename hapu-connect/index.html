@@ -1,1 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hapū Connect — Parikino Marae</title>
+<meta name="description" content="Register your details and share your whakaaro with Parikino Marae.">
+<meta name="theme-color" content="#653366">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --plum:#653366;
+  --plum-dark:#472448;
+  --periwinkle:#666698;
+  --paper:#FAF8F6;
+  --paper2:#F0EAEF;
+  --ink:#2B2030;
+  --stone:#7C7284;
+  --line:#E3D9E2;
+  --good:#2E7D32;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+.wrap{max-width:480px;margin:0 auto;padding:0 24px;width:100%}
+header{padding:28px 0 8px}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--periwinkle);text-transform:uppercase}
+h1{font-family:'Playfair Display',serif;font-weight:700;font-size:26px;color:var(--plum);margin-top:4px}
+.sub{color:var(--stone);font-size:14px;margin-top:6px}
+main{flex:1;padding:24px 0 48px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:16px}
+label{display:block;font-size:12px;font-weight:700;color:var(--plum-dark);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+input,textarea{
+  width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;
+  font-family:'Inter',sans-serif;font-size:15px;color:var(--ink);background:var(--paper);
+  margin-bottom:18px;
+}
+input:focus,textarea:focus{outline:none;border-color:var(--periwinkle)}
+textarea{min-height:80px;resize:vertical}
+.btn{
+  display:block;width:100%;padding:14px;border:none;border-radius:10px;
+  background:var(--plum);color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:15px;
+  cursor:pointer;transition:background .15s;
+}
+.btn:hover{background:var(--plum-dark)}
+.btn:disabled{background:var(--stone);cursor:not-allowed}
+.btn-outline{
+  background:transparent;border:1.5px solid var(--plum);color:var(--plum);
+}
+.btn-outline:hover{background:var(--paper2)}
+.choice-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.choice-btn{
+  display:block;width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:10px;
+  background:#fff;color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;text-align:left;
+  cursor:pointer;transition:all .15s;
+}
+.choice-btn:hover{border-color:var(--periwinkle);background:var(--paper2)}
+.choice-btn.selected{border-color:var(--plum);background:var(--paper2);font-weight:700;color:var(--plum-dark)}
+.error{color:#B3261E;font-size:13px;margin-top:-10px;margin-bottom:14px}
+.center{text-align:center}
+.icon-circle{
+  width:56px;height:56px;border-radius:50%;background:var(--paper2);color:var(--plum);
+  display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;
+}
+.thanks h2{font-family:'Playfair Display',serif;font-size:22px;color:var(--plum-dark);margin-bottom:8px}
+.thanks p{color:var(--stone);font-size:14px}
+.link-btn{background:none;border:none;color:var(--plum);font-weight:600;font-size:13px;cursor:pointer;text-decoration:underline;padding:4px 0}
+footer{padding:16px 24px 28px;text-align:center;color:var(--stone);font-size:11px}
+.loading{text-align:center;padding:60px 0;color:var(--stone);font-size:14px}
+</style>
+</head>
+<body>
+<div id="root"></div>
 
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const SUPABASE_URL = "https://iqxvqndfroegvhcipqkn.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_sdBnR2sC_u8i6gFrydvcbA_8qBpTtbS";
+
+async function supaFetch(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+  return res;
+}
+
+function Header({ eyebrow, title, sub }) {
+  return (
+    <header className="wrap">
+      <div className="eyebrow">{eyebrow}</div>
+      <h1>{title}</h1>
+      {sub && <div className="sub">{sub}</div>}
+    </header>
+  );
+}
+
+function EmailGate({ onFound, onNotFound }) {
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  async function check() {
+    if (!email.trim()) { setErr("Enter your email to continue."); return; }
+    setBusy(true); setErr("");
+    try {
+      const res = await supaFetch("rpc/hc_check_member", {
+        method: "POST",
+        body: JSON.stringify({ p_email: email.trim().toLowerCase() }),
+      });
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        onFound({ id: data[0].id, name: data[0].name, email: email.trim().toLowerCase() });
+      } else {
+        onNotFound(email.trim().toLowerCase());
+      }
+    } catch (e) {
+      setErr("Something went wrong — please try again.");
+    }
+    setBusy(false);
+  }
+
+  return (
+    <div className="wrap">
+      <div className="card">
+        <label>Your email</label>
+        <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" onKeyDown={e => e.key === "Enter" && check()} />
+        {err && <div className="error">{err}</div>}
+        <button className="btn" onClick={check} disabled={busy}>{busy ? "Checking…" : "Continue"}</button>
+      </div>
+      <p className="sub center">First time here? Enter your email and we'll take you to a quick registration.</p>
+    </div>
+  );
+}
+
+function RegisterForm({ email, onRegistered }) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [whakapapa, setWhakapapa] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
+  async function submit() {
+    if (!name.trim()) { setErr("Please enter your name."); return; }
+    setBusy(true); setErr("");
+    try {
+      const res = await supaFetch("hc_members", {
+        method: "POST",
+        headers: { Prefer: "return=representation" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email,
+          phone: phone.trim() || null,
+          whakapapa: whakapapa.trim() || null,
+        }),
+      });
+      if (!res.ok) throw new Error("insert failed");
+      const data = await res.json();
+      onRegistered({ id: data[0].id, name: data[0].name, email });
+    } catch (e) {
+      setErr("Couldn't save your details — please try again.");
+    }
+    setBusy(false);
+  }
+
+  return (
+    <div className="wrap">
+      <div className="card">
+        <label>Full name</label>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="Your full name" />
+        <label>Phone (optional)</label>
+        <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="021 234 5678" />
+        <label>Whakapapa / hapū connection</label>
+        <textarea value={whakapapa} onChange={e => setWhakapapa(e.target.value)} placeholder="How you connect to Parikino — hapū, whānau, tūpuna…" />
+        {err && <div className="error">{err}</div>}
+        <button className="btn" onClick={submit} disabled={busy}>{busy ? "Saving…" : "Register"}</button>
+      </div>
+      <p className="sub center">Your email ({email}) is already set — this is just a one-time registration.</p>
+    </div>
+  );
+}
+
+function Poll({ member }) {
+  const [poll, setPoll] = useState(undefined);
+  const [selected, setSelected] = useState(null);
+  const [freeText, setFreeText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await supaFetch("hc_polls?active=eq.true&select=id,question,options&limit=1");
+        const data = await res.json();
+        setPoll(data && data.length ? data[0] : null);
+      } catch (e) {
+        setPoll(null);
+      }
+    })();
+  }, []);
+
+  async function submit() {
+    const response = poll.options && poll.options.length ? selected : freeText.trim();
+    if (!response) { setErr("Please choose or write an answer first."); return; }
+    setBusy(true); setErr("");
+    try {
+      const res = await supaFetch("hc_poll_responses", {
+        method: "POST",
+        body: JSON.stringify({ poll_id: poll.id, member_id: member.id, response }),
+      });
+      if (!res.ok) throw new Error("insert failed");
+      setDone(true);
+    } catch (e) {
+      setErr("Couldn't send your answer — please try again.");
+    }
+    setBusy(false);
+  }
+
+  if (poll === undefined) return <div className="loading">Loading…</div>;
+
+  if (done) {
+    return (
+      <div className="wrap">
+        <div className="card thanks center">
+          <div className="icon-circle">✓</div>
+          <h2>Ngā mihi, {member.name.split(" ")[0]}</h2>
+          <p>Your whakaaro has been recorded. Thank you for taking a moment to share it.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!poll) {
+    return (
+      <div className="wrap">
+        <div className="card thanks center">
+          <div className="icon-circle">🤍</div>
+          <h2>Kia ora, {member.name.split(" ")[0]}</h2>
+          <p>There's no question open right now — check back again soon.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="wrap">
+      <div className="card">
+        <label>This week's question</label>
+        <h2 style={{ fontFamily: "'Playfair Display',serif", fontSize: 19, color: "var(--plum-dark)", marginBottom: 18 }}>{poll.question}</h2>
+        {poll.options && poll.options.length > 0 ? (
+          <div className="choice-grid">
+            {poll.options.map((opt, i) => (
+              <button key={i} className={"choice-btn" + (selected === opt ? " selected" : "")} onClick={() => setSelected(opt)}>{opt}</button>
+            ))}
+          </div>
+        ) : (
+          <textarea value={freeText} onChange={e => setFreeText(e.target.value)} placeholder="Share your whakaaro…" />
+        )}
+        {err && <div className="error">{err}</div>}
+        <button className="btn" onClick={submit} disabled={busy} style={{ marginTop: 8 }}>{busy ? "Sending…" : "Send answer"}</button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [stage, setStage] = useState("gate"); // gate | register | poll
+  const [member, setMember] = useState(null);
+  const [pendingEmail, setPendingEmail] = useState("");
+
+  if (stage === "gate") {
+    return (
+      <React.Fragment>
+        <Header eyebrow="Parikino Marae" title="Hapū Connect" sub="Register your details and share your whakaaro." />
+        <main>
+          <EmailGate
+            onFound={(m) => { setMember(m); setStage("poll"); }}
+            onNotFound={(email) => { setPendingEmail(email); setStage("register"); }}
+          />
+        </main>
+        <Footer />
+      </React.Fragment>
+    );
+  }
+
+  if (stage === "register") {
+    return (
+      <React.Fragment>
+        <Header eyebrow="Parikino Marae" title="Welcome" sub="Let's get your details on record." />
+        <main>
+          <RegisterForm email={pendingEmail} onRegistered={(m) => { setMember(m); setStage("poll"); }} />
+        </main>
+        <Footer />
+      </React.Fragment>
+    );
+  }
+
+  return (
+    <React.Fragment>
+      <Header eyebrow="Parikino Marae" title="Hapū Connect" />
+      <main>
+        <Poll member={member} />
+      </main>
+      <Footer />
+    </React.Fragment>
+  );
+}
+
+function Footer() {
+  return <footer>Nā Parikino Marae Reservation Trust</footer>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
