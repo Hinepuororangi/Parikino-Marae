@@ -190,8 +190,8 @@ function RegisterForm({ email, onRegistered }) {
         <input value={name} onChange={e => setName(e.target.value)} placeholder="Your full name" />
         <label>Phone (optional)</label>
         <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="021 234 5678" />
-        <label>Whakapapa / hapū connection</label>
-        <textarea value={whakapapa} onChange={e => setWhakapapa(e.target.value)} placeholder="How you connect to Parikino — hapū, whānau, tūpuna…" />
+        <label>Whakapapa — name your tūpuna</label>
+        <textarea value={whakapapa} onChange={e => setWhakapapa(e.target.value)} placeholder="Who are your tūpuna? e.g. names of the ancestors that connect you to Parikino, and your hapū/iwi." />
         {err && <div className="error">{err}</div>}
         <button className="btn" onClick={submit} disabled={busy}>{busy ? "Saving…" : "Register"}</button>
       </div>
@@ -307,7 +307,7 @@ function App() {
   if (stage === "register") {
     return (
       <React.Fragment>
-        <Header eyebrow="Parikino Marae" title="Welcome" sub="Let's get your details on record." />
+        <Header eyebrow="Parikino Marae · Hapū Connect" title="Welcome" sub="Let's get your details on record." />
         <main>
           <RegisterForm email={pendingEmail} onRegistered={(m) => { setMember(m); setStage("poll"); }} />
         </main>
@@ -318,7 +318,7 @@ function App() {
 
   return (
     <React.Fragment>
-      <Header eyebrow="Parikino Marae" title="Hapū Connect" />
+      <Header eyebrow="Parikino Marae · Hapū Connect" title="Kōrero mai" />
       <main>
         <Poll member={member} />
       </main>
