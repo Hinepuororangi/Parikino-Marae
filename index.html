@@ -43,8 +43,43 @@ header .wrap{display:flex;justify-content:space-between;align-items:center}
 .brandmark{display:flex;align-items:center;gap:10px}
 .brandmark svg{width:34px;height:34px;flex-shrink:0}
 .brandmark span{font-family:'Playfair Display',serif;font-weight:700;font-size:19px;color:var(--plum-dark);line-height:1.1}
-.menu-icon{width:26px;height:18px;display:flex;flex-direction:column;justify-content:space-between}
+.menu-icon{width:26px;height:18px;display:flex;flex-direction:column;justify-content:space-between;background:none;border:none;padding:0;cursor:pointer}
 .menu-icon i{display:block;height:2px;background:var(--plum-dark);border-radius:2px}
+
+.nav-overlay{
+  position:fixed;inset:0;background:rgba(43,32,48,.45);
+  opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:40;
+}
+.nav-overlay.open{opacity:1;pointer-events:auto}
+
+.nav-drawer{
+  position:fixed;top:0;right:0;bottom:0;width:80%;max-width:340px;
+  background:var(--plum-dark);z-index:50;
+  display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .3s ease;
+  padding:0 8px 24px;
+}
+.nav-drawer.open{transform:translateX(0)}
+
+.nav-drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 16px 18px;
+}
+.nav-drawer-head .brandmark span{
+  font-family:'Playfair Display',serif;font-weight:700;font-size:17px;
+  color:var(--paper);line-height:1.15;
+}
+.nav-close{
+  background:none;border:none;color:var(--paper);font-size:28px;
+  line-height:1;cursor:pointer;padding:4px 8px;
+}
+
+.nav-link{
+  display:block;color:var(--paper);text-decoration:none;
+  font-family:'Playfair Display',serif;font-weight:600;font-size:20px;
+  padding:15px 16px;border-top:1px solid rgba(250,248,246,.14);
+}
+.nav-link:active{background:rgba(250,248,246,.08)}
 
 .circles{display:flex;justify-content:center;gap:22px;padding:28px 24px 4px;flex-wrap:wrap}
 .circle-item{text-align:center;text-decoration:none}
@@ -151,9 +186,24 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
       <svg viewBox="0 0 40 40" fill="none"><path d="M4 20 L20 6 L36 20" stroke="#653366" stroke-width="2.4" stroke-linejoin="round"/><rect x="10" y="18" width="20" height="16" stroke="#653366" stroke-width="2.2"/></svg>
       <span>Parikino<br>Marae</span>
     </div>
-    <a href="bookings.html" class="menu-icon" aria-label="Book"><i></i><i></i><i></i></a>
+    <button class="menu-icon" id="navToggle" aria-label="Open menu"><i></i><i></i><i></i></button>
   </div>
 </header>
+
+<div class="nav-overlay" id="navOverlay"></div>
+<nav class="nav-drawer" id="navDrawer" aria-hidden="true">
+  <div class="nav-drawer-head">
+    <div class="brandmark"><span>Parikino<br>Marae</span></div>
+    <button class="nav-close" id="navClose" aria-label="Close menu">&times;</button>
+  </div>
+  <a class="nav-link" href="#whare">Ngā Whare</a>
+  <a class="nav-link" href="#hireage">Hīreage</a>
+  <a class="nav-link" href="#kawa">Kawa</a>
+  <a class="nav-link" href="#hireage">Tangihanga</a>
+  <a class="nav-link" href="#hui" id="navHuiLink" style="display:none">Hui Notice</a>
+  <a class="nav-link" href="#register">Hapū Connect</a>
+  <a class="nav-link" href="bookings.html">Book the Marae</a>
+</nav>
 
 <div class="circles">
   <a class="circle-item" href="#whare">
@@ -188,7 +238,7 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
     <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 3 6 6 6 10a6 6 0 0 1-12 0c0-4 2-7 6-10z"/></svg></div>
     <span>Kawa</span>
   </a>
-  <a class="qlink" href="#tangi">
+  <a class="qlink" href="#hireage">
     <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.4-9.5-8.8C1 9 2.3 5.5 5.6 5c2-.3 3.6.8 4.4 2.3C10.8 5.8 12.4 4.7 14.4 5c3.3.5 4.6 4 3.1 7.2C15 16.6 12 21 12 21z"/></svg></div>
     <span>Tangihanga</span>
   </a>
@@ -267,12 +317,12 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
     <div class="eyebrow">Staying at the Marae</div>
     <h2 class="center">Kawa &amp; Tikanga</h2>
     <ul>
-      <li>Zero tolerance: illegal drugs, and fighting are strictly prohibited on the marae.</li>
+      <li>Zero tolerance: illegal drugs, alcohol and fighting are strictly prohibited on the marae.</li>
       <li>No smoking or vaping inside any buildings.</li>
       <li>Please keep all areas of the marae tidy during your stay.</li>
       <li>No driving on the marae — please use the designated parking areas.</li>
     </ul>
-    <p style="margin-top:20px;font-size:13.5px;color:var(--stone)">If you need support with a pōwhiri or tangihanga, let us know in your booking and we will guide you and your whānau. Take some time for the awa.</p>
+    <p style="margin-top:20px;font-size:13.5px;color:var(--stone)">If you need support with a pōwhiri or tangihanga, let us know in your booking and we will guide you and your whānau. Take some time for the awa — Parikino is well known for its fruit and fishing spots.</p>
   </div>
 </section>
 
@@ -296,6 +346,7 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
         <label>Message (optional)</label>
         <input type="text" id="huiMessage" placeholder="e.g. bringing whānau, running late">
         <button type="submit" id="huiSubmit">Send RSVP</button>
+        <p style="font-size:12px;color:var(--stone);text-align:center;margin-top:8px">Changed your mind? Just fill this in again with the same name — it'll update your response.</p>
         <div class="reg-msg" id="huiMsg"></div>
       </form>
     </div>
@@ -341,6 +392,33 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
 </footer>
 
 <script>
+(function(){
+  const toggle = document.getElementById('navToggle');
+  const drawer = document.getElementById('navDrawer');
+  const overlay = document.getElementById('navOverlay');
+  const closeBtn = document.getElementById('navClose');
+
+  function openNav(){
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    drawer.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNav(){
+    drawer.classList.remove('open');
+    overlay.classList.remove('open');
+    drawer.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+
+  toggle.addEventListener('click', openNav);
+  closeBtn.addEventListener('click', closeNav);
+  overlay.addEventListener('click', closeNav);
+  drawer.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', closeNav);
+  });
+})();
+
 (function(){
   const SUPABASE_URL = "https://iqxvqndfroegvhcipqkn.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_sdBnR2sC_u8i6gFrydvcbA_8qBpTtbS";
@@ -435,6 +513,8 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
         `${formatDate(hui.hui_date)}${hui.hui_time ? ', ' + hui.hui_time : ''}${hui.location ? ' — ' + hui.location : ''}`;
       document.getElementById('huiAgenda').textContent = hui.agenda || '';
       section.style.display = '';
+      const navHuiLink = document.getElementById('navHuiLink');
+      if(navHuiLink) navHuiLink.style.display = '';
     }catch(err){
       // no upcoming hui found — section stays hidden
     }
@@ -462,13 +542,13 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
     msg.className = 'reg-msg';
 
     try{
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/hui_rsvps`, {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/hui_rsvps?on_conflict=hui_id,name`, {
         method: 'POST',
         headers: {
           apikey: SUPABASE_ANON_KEY,
           Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json',
-          Prefer: 'return=minimal'
+          Prefer: 'resolution=merge-duplicates,return=minimal'
         },
         body: JSON.stringify({
           hui_id: currentHuiId,
