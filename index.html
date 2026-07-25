@@ -110,6 +110,16 @@ h2.center{font-family:'Playfair Display',serif;font-weight:700;font-size:clamp(2
   cursor:pointer;
 }
 .reg-form button:disabled{background:var(--stone)}
+.rsvp-toggle{display:flex;gap:10px}
+.rsvp-option{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  border:1.5px solid var(--line);background:#fff;
+  padding:12px 10px;font-size:13.5px;font-weight:600;color:var(--ink);
+  cursor:pointer;transition:border-color .15s,background .15s;
+  text-transform:none;letter-spacing:normal;margin:0;
+}
+.rsvp-option input{width:auto;margin:0}
+.rsvp-option:has(input:checked){border-color:var(--plum);background:var(--paper2);color:var(--plum-dark)}
 .reg-msg{margin-top:14px;font-size:13.5px;text-align:center}
 .reg-msg.ok{color:#2E7D32}
 .reg-msg.err{color:#B3261E}
@@ -266,6 +276,33 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
   </div>
 </section>
 
+<section class="reg-section" id="hui" style="display:none">
+  <div class="wrap">
+    <div class="eyebrow">Hui Notice</div>
+    <h2 class="center" id="huiTitle">Upcoming Hui</h2>
+    <div class="infopanel">
+      <h3 id="huiWhen"></h3>
+      <p id="huiAgenda"></p>
+    </div>
+    <div class="infopanel">
+      <form class="reg-form" id="huiForm">
+        <label>Full name</label>
+        <input type="text" id="huiName" required>
+        <label>Attending or apologies?</label>
+        <div class="rsvp-toggle">
+          <label class="rsvp-option"><input type="radio" name="huiStatus" value="attending" checked><span>Attending</span></label>
+          <label class="rsvp-option"><input type="radio" name="huiStatus" value="apologies"><span>Apologies</span></label>
+        </div>
+        <label>Message (optional)</label>
+        <input type="text" id="huiMessage" placeholder="e.g. bringing whānau, running late">
+        <button type="submit" id="huiSubmit">Send RSVP</button>
+        <div class="reg-msg" id="huiMsg"></div>
+      </form>
+    </div>
+  </div>
+</section>
+</section>
+
 <section class="reg-section" id="register">
   <div class="wrap">
     <div class="eyebrow">Hapū Connect</div>
@@ -361,6 +398,102 @@ footer .brand{font-family:'Playfair Display',serif;font-style:italic;font-weight
 
     submitBtn.disabled = false;
     submitBtn.textContent = 'Register';
+  });
+})();
+
+(function(){
+  const SUPABASE_URL = "https://iqxvqndfroegvhcipqkn.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_sdBnR2sC_u8i6gFrydvcbA_8qBpTtbS";
+  const section = document.getElementById('hui');
+  const form = document.getElementById('huiForm');
+  const submitBtn = document.getElementById('huiSubmit');
+  const msg = document.getElementById('huiMsg');
+  let currentHuiId = null;
+
+  function formatDate(dateStr){
+    try{
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-NZ', { weekday:'long', day:'numeric', month:'long' });
+    }catch(e){ return dateStr; }
+  }
+
+  async function loadNextHui(){
+    try{
+      const today = new Date().toISOString().slice(0,10);
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/hui_notices?is_public=eq.true&hui_date=gte.${today}&order=hui_date.asc&limit=1`,
+        { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
+      );
+      if(!res.ok) return;
+      const rows = await res.json();
+      if(!rows.length) return;
+
+      const hui = rows[0];
+      currentHuiId = hui.id;
+      document.getElementById('huiTitle').textContent = hui.title;
+      document.getElementById('huiWhen').textContent =
+        `${formatDate(hui.hui_date)}${hui.hui_time ? ', ' + hui.hui_time : ''}${hui.location ? ' — ' + hui.location : ''}`;
+      document.getElementById('huiAgenda').textContent = hui.agenda || '';
+      section.style.display = '';
+    }catch(err){
+      // no upcoming hui found — section stays hidden
+    }
+  }
+
+  loadNextHui();
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    if(!currentHuiId) return;
+
+    const name = document.getElementById('huiName').value.trim();
+    const status = form.querySelector('input[name="huiStatus"]:checked').value;
+    const message = document.getElementById('huiMessage').value.trim();
+
+    if(!name){
+      msg.textContent = 'Please enter your name.';
+      msg.className = 'reg-msg err';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    msg.textContent = '';
+    msg.className = 'reg-msg';
+
+    try{
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/hui_rsvps`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify({
+          hui_id: currentHuiId,
+          name: name,
+          status: status,
+          message: message || null
+        })
+      });
+
+      if(res.ok){
+        form.reset();
+        msg.textContent = status === 'attending'
+          ? 'Ngā mihi — see you there!'
+          : 'Ngā mihi — your apologies have been noted.';
+        msg.className = 'reg-msg ok';
+      } else {
+        throw new Error('save failed');
+      }
+    }catch(err){
+      msg.textContent = "Couldn't send your RSVP — please try again.";
+      msg.className = 'reg-msg err';
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send RSVP';
   });
 })();
 </script>
